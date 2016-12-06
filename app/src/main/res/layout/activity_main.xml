@@ -3,68 +3,89 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.witold.wicioguitartuner.MainActivity">
 
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chart"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginBottom="20dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start"
-        android:id="@+id/buttonStartRecording"
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/linearLayout"
+        android:weightSum="1"
+        android:layout_above="@+id/ntb_horizontal">
+
+        <RelativeLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@color/colorPrimary"
+            android:layout_gravity="center_vertical"
+            android:layout_above="@+id/linearLayout"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:weightSum="1">
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:visibility="invisible"
+                android:id="@+id/imageViewStatus"
+                android:src="@android:drawable/ic_btn_speak_now"
+                android:layout_below="@+id/textViewCurrentFreq"
+                android:layout_centerHorizontal="true" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start"
+                android:id="@+id/buttonStartRecording"
+                android:layout_alignBottom="@+id/buttonFinishRecording"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stop"
+                android:id="@+id/buttonFinishRecording"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorAccent"
+                android:textStyle="bold"
+                android:textSize="28dp"
+                android:textAlignment="center"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:fontFamily="sans-serif-condensed"
+                android:text="Hz"
+                android:id="@+id/textViewCurrentFreq"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true" />
+        </RelativeLayout>
+
+        <android.support.v4.view.ViewPager
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/viewPager"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true" />
+
+    </LinearLayout>
+
+    <devlight.io.library.ntb.NavigationTabBar
+        android:id="@+id/ntb_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom"
+        app:ntb_inactive_color="@color/colorPrimaryDark"
+        app:ntb_active_color="@color/colorAccent"
+        app:ntb_bg_color="@color/colorPrimary"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text=""
-        android:textAlignment="center"
-        android:id="@+id/textViewNote"
-        android:layout_above="@+id/buttonStartRecording"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Stop"
-        android:id="@+id/buttonFinishRecording"
-        android:layout_alignTop="@+id/buttonStartRecording"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text=""
-        android:id="@+id/textViewFreq"
-        android:textAlignment="center"
-        android:layout_above="@+id/buttonFinishRecording"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:visibility="invisible"
-        android:id="@+id/imageViewStatus"
-        android:src="@android:drawable/ic_btn_speak_now"
-        android:layout_alignTop="@+id/buttonFinishRecording"
-        android:layout_centerHorizontal="true" />
-
 </RelativeLayout>

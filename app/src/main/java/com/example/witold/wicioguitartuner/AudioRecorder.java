@@ -115,7 +115,7 @@ public class AudioRecorder {
             context.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    context.initializeChart(complexResultFromFFT);
+                    //context.initializeChart(complexResultFromFFT);
                     context.setMaxFreq(getMax(complexResultFromFFT));
                 }
             });
