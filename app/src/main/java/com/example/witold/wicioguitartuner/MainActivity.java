@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.witold.wicioguitartuner.AudioAnalysis.Complex;
 import com.example.witold.wicioguitartuner.AudioAnalysis.FrequencySet;
@@ -38,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
     public static int sampleSize = 8192;
     public static int bufferSize = 2048;
     public static int maxChartValue = 1200;
-    TextView noteText;
     Button buttonStart;
     ViewPager pager;
     Button buttonFinish;
@@ -54,40 +54,36 @@ public class MainActivity extends AppCompatActivity {
         pager.setAdapter(adapter);
         initializeComponents();
         initializeNavBar();
+        Toast.makeText(getApplicationContext(), "" + adapter.registeredFragments.size(),Toast.LENGTH_SHORT).show();
     }
 
-    private void initializeNavBar()
-    {
+    private void initializeNavBar() {
         final NavigationTabBar navigationTabBar = (NavigationTabBar) findViewById(R.id.ntb_horizontal);
         final ArrayList<NavigationTabBar.Model> models = new ArrayList<>();
         models.add(
                 new NavigationTabBar.Model.Builder(
-                        getResources().getDrawable(R.drawable.icon_guitar_pick),
+                        getResources().getDrawable(R.drawable.ic_guitar),
                         (R.color.colorAccent)
                 ).title("Heart")
-                        .badgeTitle("NTB")
                         .build()
         );
         models.add(
                 new NavigationTabBar.Model.Builder(
-                        getResources().getDrawable(R.drawable.icon_guitar_pick),
+                        getResources().getDrawable(R.drawable.ic_fourier),
                         (R.color.colorAccent)
-                          ).title("Cup")
-                        .badgeTitle("with")
+                ).title("Cup")
                         .build()
         );
         models.add(
                 new NavigationTabBar.Model.Builder(
-                        getResources().getDrawable(R.drawable.icon_guitar_pick),
+                        getResources().getDrawable(R.drawable.ic_amplitube),
                         (R.color.colorAccent)
-                           ).title("Diploma")
-                        .badgeTitle("state")
+                ).title("Diploma")
                         .build()
         );
 
         navigationTabBar.setModels(models);
-        navigationTabBar.setViewPager(pager, 3);
-        navigationTabBar.setIconSizeFraction(0.5f);
+        navigationTabBar.setViewPager(pager, 1);
     }
 
     private void initializeComponents()
@@ -144,22 +140,17 @@ public class MainActivity extends AppCompatActivity {
         setNoteText(frequencySet.findClosest(bucket));
     }
 
-    public void initializeChart(Complex[] dataObjects)
+    public void initializeChart(Complex[] amplitube, Complex[] dataObjects)
     {
-        LineChart chart = (LineChart) findViewById(R.id.chart);
-
-        List<Entry> entries = new ArrayList<>();
-        for (int i = 0; i < maxChartValue; i++) {
-            entries.add(new Entry(((float)DefaultParameters.RECORDER_SAMPLERATE/sampleSize)*i, (float)Math.abs(dataObjects[i].re)));
+        ((FFTChartFragment) adapter.getRegisteredFragment(1)).initializeChart(dataObjects, DefaultParameters.MAX_FOURIER_CHART_FREQ);
+        if(adapter.getRegisteredFragment(2) != null) {
+            ((ChartFragment)adapter.getRegisteredFragment(2)).initializeChart(amplitube, amplitube.length);
         }
-
-        LineDataSet dataSet = new LineDataSet(entries, "Label"); // add entries to dataset
-        dataSet.setColor(R.color.colorAccent);
-        dataSet.setValueTextColor(R.color.colorAccent);
-
-        LineData lineData = new LineData(dataSet);
-        chart.setData(lineData);
-        chart.invalidate();
+        else
+        {
+            adapter.instantiateItem(pager, 2);
+            ((ChartFragment)adapter.getRegisteredFragment(2)).initializeChart(amplitube, amplitube.length);
+        }
     }
 
     private Complex[] getDSin()
@@ -200,10 +191,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int pos) {
             switch(pos) {
-
                 case 0: return TunerFragment.newInstance("FirstFragment, Instance 1");
-                case 1: return ChartFragment.newInstance("SecondFragment, Instance 1");
-                case 2: return FFTChartFragment.newInstance("SecondFragment, Instance 1");
+                case 1: return FFTChartFragment.newInstance("ThirdFragment, Instance 1");
+                case 2: return ChartFragment.newInstance("SecondFragment, Instance 1");
                 default: return null;
             }
         }

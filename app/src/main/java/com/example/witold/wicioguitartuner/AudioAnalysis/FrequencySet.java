@@ -73,8 +73,12 @@ public class FrequencySet {
     public SingleFrequency findClosest(int bucket)
     {
         int index = Collections.binarySearch(bucketArray, bucket);
-        index = index > 0 ? index : (-index) - 1;
-        int closestIndex = (bucketArray.get(index) - bucket) > (bucket - bucketArray.get(index - 1)) ?  (index - 1) : index;
+        index = index >= 0 ? index : (-index) - 1;
+        int closestIndex;
+        if(index > 0) {
+            closestIndex = (bucketArray.get(index) - bucket) > (bucket - bucketArray.get(index - 1)) ? (index - 1) : index;
+        }
+        else closestIndex = index;
         return freqArray.get(closestIndex);
     }
 

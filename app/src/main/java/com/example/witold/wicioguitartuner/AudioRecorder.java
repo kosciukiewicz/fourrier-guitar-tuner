@@ -23,7 +23,6 @@ public class AudioRecorder {
     boolean isRecording = false;
 
     public AudioRecorder(MainActivity context, int sampleSize, int bufferSize, int minimalLoudness) {
-
         this.context = context;
         this.sampleSize = sampleSize;
         this.bufferSize = bufferSize;
@@ -104,7 +103,7 @@ public class AudioRecorder {
             return null;
         }
 
-        protected void calculate(double[] data, int size) //po udanym nagraniu próbki liczy FFT
+        protected void calculate(final double[] data, int size) //po udanym nagraniu próbki liczy FFT
         {
             final Complex[] complexResult = new Complex[size]; //najpierw zamiana na wartości zespolone
             for(int i= 0; i < size; i++)
@@ -115,7 +114,7 @@ public class AudioRecorder {
             context.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    //context.initializeChart(complexResultFromFFT);
+                    context.initializeChart(complexResult,complexResultFromFFT);
                     context.setMaxFreq(getMax(complexResultFromFFT));
                 }
             });

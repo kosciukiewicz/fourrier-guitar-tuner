@@ -11,8 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.pavlospt.roundedletterview.RoundedLetterView;
+
 public class TunerFragment extends Fragment {
-    static TextView noteText;
+    static RoundedLetterView noteView;
     public TunerFragment() {
         // Required empty public constructor
     }
@@ -26,7 +28,7 @@ public class TunerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_tuner, container, false);
-        noteText = (TextView) view.findViewById(R.id.textViewNote);
+        noteView = (RoundedLetterView) view.findViewById(R.id.noteView);
         return view;
     }
 
@@ -45,6 +47,6 @@ public class TunerFragment extends Fragment {
 
     public void setNoteTextView(SingleFrequency frequency)
     {
-        noteText.setText(frequency.note);
+        noteView.setTitleText(frequency.note);
     }
 }

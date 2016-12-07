@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="roundedletterview-1.2">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.github.pavlospt/roundedletterview/1.2/res" />
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.github.pavlospt/roundedletterview/1.2/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.pavlospt/roundedletterview/1.2/8ac3943afa02341df00b91fd704a00e18bcc1f70/roundedletterview-1.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -27,45 +27,54 @@
             android:layout_alignParentEnd="true"
             android:weightSum="1">
             <ImageView
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:visibility="invisible"
                 android:id="@+id/imageViewStatus"
-                android:src="@android:drawable/ic_btn_speak_now"
-                android:layout_below="@+id/textViewCurrentFreq"
-                android:layout_centerHorizontal="true" />
+                android:src="@drawable/ic_mic"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
 
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:background="@color/colorPrimaryDark"
+                android:textColor="@color/colorAccent"
                 android:text="Start"
+                android:layout_marginLeft="10dp"
                 android:id="@+id/buttonStartRecording"
-                android:layout_alignBottom="@+id/buttonFinishRecording"
+                android:layout_centerVertical="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true" />
 
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:background="@color/colorPrimaryDark"
+                android:textColor="@color/colorAccent"
                 android:text="Stop"
                 android:id="@+id/buttonFinishRecording"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true" />
+                android:layout_alignTop="@+id/buttonStartRecording"
+                android:layout_toRightOf="@+id/buttonStartRecording"
+                android:layout_toEndOf="@+id/buttonStartRecording" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:textColor="@color/colorAccent"
                 android:textStyle="bold"
-                android:textSize="28dp"
+                android:textSize="24dp"
                 android:textAlignment="center"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:fontFamily="sans-serif-condensed"
                 android:text="Hz"
                 android:id="@+id/textViewCurrentFreq"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true" />
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/imageViewStatus"
+                android:layout_toRightOf="@+id/buttonFinishRecording"
+                android:layout_toEndOf="@+id/buttonFinishRecording" />
         </RelativeLayout>
 
         <android.support.v4.view.ViewPager
@@ -82,9 +91,16 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_gravity="bottom"
+        app:ntb_badged="false"
         app:ntb_inactive_color="@color/colorPrimaryDark"
         app:ntb_active_color="@color/colorAccent"
         app:ntb_bg_color="@color/colorPrimary"
+        app:ntb_tinted="true"
+        app:ntb_title_mode="all"
+        app:ntb_titled="true"
+        app:ntb_swiped="true"
+        app:ntb_scaled="true"
+        app:ntb_title_size="15dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
