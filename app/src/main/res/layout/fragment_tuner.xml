@@ -23,6 +23,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/imageViewArrowUp"
         android:src="@drawable/arrow_up"
+        android:visibility="invisible"
         android:layout_above="@+id/noteView"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="70dp" />
@@ -33,7 +34,18 @@
         android:id="@+id/imageViewArrowDown"
         android:src="@drawable/arrow_down"
         android:layout_below="@+id/noteView"
+        android:visibility="invisible"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="70dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="()"
+        android:id="@+id/textViewClosestFreqValue"
+        android:layout_below="@+id/noteView"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

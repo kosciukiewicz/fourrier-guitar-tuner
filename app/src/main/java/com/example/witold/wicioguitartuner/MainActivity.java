@@ -20,11 +20,6 @@ import android.widget.Toast;
 
 import com.example.witold.wicioguitartuner.AudioAnalysis.Complex;
 import com.example.witold.wicioguitartuner.AudioAnalysis.FrequencySet;
-import com.github.mikephil.charting.charts.Chart;
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,21 +59,21 @@ public class MainActivity extends AppCompatActivity {
                 new NavigationTabBar.Model.Builder(
                         getResources().getDrawable(R.drawable.ic_guitar),
                         (R.color.colorAccent)
-                ).title("Heart")
+                ).title("Tuner")
                         .build()
         );
         models.add(
                 new NavigationTabBar.Model.Builder(
                         getResources().getDrawable(R.drawable.ic_fourier),
                         (R.color.colorAccent)
-                ).title("Cup")
+                ).title("FFT Chart")
                         .build()
         );
         models.add(
                 new NavigationTabBar.Model.Builder(
                         getResources().getDrawable(R.drawable.ic_amplitube),
                         (R.color.colorAccent)
-                ).title("Diploma")
+                ).title("Signal Chart")
                         .build()
         );
 
@@ -109,14 +104,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeAudioRecorded()   //Initialize audioRecorder
     {
-        audioRecorder = new AudioRecorder(this,sampleSize, bufferSize, 50);
-        audioRecorder.StartRecording();
+        if(audioRecorder==null) {
+            audioRecorder = new AudioRecorder(this, sampleSize, bufferSize, 50);
+            audioRecorder.StartRecording();
+        }
     }
 
     private void stopAndResetRecorder()
     {
-        if(audioRecorder!=null)
-        audioRecorder.StopRecording();
+        if(audioRecorder!=null) {
+            audioRecorder.StopRecording();
+            audioRecorder = null;
+        }
     }
     public void setNoteText(SingleFrequency frequency)
     {
@@ -136,8 +135,26 @@ public class MainActivity extends AppCompatActivity {
     }
     public void setMaxFreq(int bucket)
     {
-        currentFrequency.setText(String.format("%1.2f Hz", bucket*((float)DefaultParameters.RECORDER_SAMPLERATE)/sampleSize));
-        setNoteText(frequencySet.findClosest(bucket));
+        float freq = bucket*((float)DefaultParameters.RECORDER_SAMPLERATE)/sampleSize;
+        float accuracy =  freq/120; //the bigger freq value the bigger tolrence of tuner
+        currentFrequency.setText(String.format("%1.2f Hz",freq));
+        SingleFrequency closestFrequency = frequencySet.findClosest(bucket);
+        setNoteText(closestFrequency);
+        if(freq - closestFrequency.getFreqValue() > accuracy )
+        {
+            ((TunerFragment)adapter.getRegisteredFragment(0)).setArrowsTooHigh();
+        }
+        else
+        {
+            if (freq - closestFrequency.getFreqValue() <  - accuracy)
+            {
+                ((TunerFragment)adapter.getRegisteredFragment(0)).setArrowsTooLow();
+            }
+            else
+            {
+                ((TunerFragment)adapter.getRegisteredFragment(0)).setArrowsEqual();
+            }
+        }
     }
 
     public void initializeChart(Complex[] amplitube, Complex[] dataObjects)
@@ -153,16 +170,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private Complex[] getDSin()
-    {
-        Complex[] complexResult = new Complex[4*2048];
-        for(int i= 0; i < 4*2048; i++)
-        {
-            complexResult[i] = new Complex(Math.sin(Math.toRadians(i)),0.0);
-        }
-        return complexResult;
-    }
-
+    /*
+     pager adapter to move between three fragments
+     */
     private class SmartFragmentStatePagerAdapter extends FragmentStatePagerAdapter  {
         private int NUM_ITEMS = 3;
         private SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();

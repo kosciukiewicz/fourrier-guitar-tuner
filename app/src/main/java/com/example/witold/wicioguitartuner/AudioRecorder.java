@@ -50,7 +50,7 @@ public class AudioRecorder {
                 AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, DefaultParameters.RECORDER_SAMPLERATE, DefaultParameters.RECORDER_CHANNELS, DefaultParameters.RECORDER_AUDIO_ENCODING, bufferSize);
                 final short[] buffer = new short[bufferSize];
                 audioRecord.startRecording();
-                while (isRecording) { //nagrywaj do czasu aż nie nagrasz pełnej próbki;
+                while (isRecording) { //record until the sample size is bug enough;
 
                     final int numberOfReadBytes = audioRecord.read(buffer, 0, bufferSize);
                     float totalAbsValue = 0.0f;
