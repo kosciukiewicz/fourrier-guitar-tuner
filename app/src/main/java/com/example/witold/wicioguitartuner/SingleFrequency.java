@@ -1,7 +1,5 @@
 package com.example.witold.wicioguitartuner;
 
-import java.util.ArrayList;
-
 /**
  * Created by Witold on 2016-12-04.
  */
@@ -19,7 +17,7 @@ public class SingleFrequency {
 
     public int countBucket()
     {
-        return (int)(MainActivity.sampleSize*freqValue/DefaultParameters.RECORDER_SAMPLERATE);
+        return (int)(DefaultParameters.SAMPLE_SIZE*freqValue/DefaultParameters.RECORDER_SAMPLERATE);
     }
 
     public int getBucket(){

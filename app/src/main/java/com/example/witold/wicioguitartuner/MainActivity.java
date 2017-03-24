@@ -1,11 +1,7 @@
 package com.example.witold.wicioguitartuner;
 
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -18,11 +14,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.witold.wicioguitartuner.AudioAnalysis.Complex;
-import com.example.witold.wicioguitartuner.AudioAnalysis.FrequencySet;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import devlight.io.library.ntb.NavigationTabBar;
 
@@ -30,16 +26,21 @@ public class MainActivity extends AppCompatActivity {
 
     SmartFragmentStatePagerAdapter adapter;
 
-    FrequencySet frequencySet;
-    public static int sampleSize = 8192;
-    public static int bufferSize = 2048;
-    public static int maxChartValue = 1200;
     Button buttonStart;
     ViewPager pager;
     Button buttonFinish;
     TextView currentFrequency;
     ImageView imageViewStatus;
     AudioRecorder audioRecorder;
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         pager = (ViewPager) findViewById(R.id.viewPager);
         adapter = new SmartFragmentStatePagerAdapter(getSupportFragmentManager());
         pager.setAdapter(adapter);
+        EventBus.getDefault().register(this);
         initializeComponents();
         initializeNavBar();
         Toast.makeText(getApplicationContext(), "" + adapter.registeredFragments.size(),Toast.LENGTH_SHORT).show();
@@ -99,13 +101,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         imageViewStatus = (ImageView) findViewById(R.id.imageViewStatus);
-        frequencySet = new FrequencySet();
     }
 
     private void initializeAudioRecorded()   //Initialize audioRecorder
     {
         if(audioRecorder==null) {
-            audioRecorder = new AudioRecorder(this, sampleSize, bufferSize, 50);
+            audioRecorder = new AudioRecorder(this, DefaultParameters.SAMPLE_SIZE, DefaultParameters.BUFFER_SIZE, 50);
             audioRecorder.StartRecording();
         }
     }
@@ -116,10 +117,6 @@ public class MainActivity extends AppCompatActivity {
             audioRecorder.StopRecording();
             audioRecorder = null;
         }
-    }
-    public void setNoteText(SingleFrequency frequency)
-    {
-        ((TunerFragment)adapter.getRegisteredFragment(0)).setNoteTextView(frequency);
     }
 
     public void setRecording(boolean visibility)
@@ -133,41 +130,12 @@ public class MainActivity extends AppCompatActivity {
             imageViewStatus.setVisibility(View.INVISIBLE);
         }
     }
-    public void setMaxFreq(int bucket)
-    {
-        float freq = bucket*((float)DefaultParameters.RECORDER_SAMPLERATE)/sampleSize;
-        float accuracy =  freq/120; //the bigger freq value the bigger tolrence of tuner
-        currentFrequency.setText(String.format("%1.2f Hz",freq));
-        SingleFrequency closestFrequency = frequencySet.findClosest(bucket);
-        setNoteText(closestFrequency);
-        if(freq - closestFrequency.getFreqValue() > accuracy )
-        {
-            ((TunerFragment)adapter.getRegisteredFragment(0)).setArrowsTooHigh();
-        }
-        else
-        {
-            if (freq - closestFrequency.getFreqValue() <  - accuracy)
-            {
-                ((TunerFragment)adapter.getRegisteredFragment(0)).setArrowsTooLow();
-            }
-            else
-            {
-                ((TunerFragment)adapter.getRegisteredFragment(0)).setArrowsEqual();
-            }
-        }
-    }
 
-    public void initializeChart(Complex[] amplitube, Complex[] dataObjects)
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void setMaxFreq(FrequencyDataMessage message)
     {
-        ((FFTChartFragment) adapter.getRegisteredFragment(1)).initializeChart(dataObjects, DefaultParameters.MAX_FOURIER_CHART_FREQ);
-        if(adapter.getRegisteredFragment(2) != null) {
-            ((ChartFragment)adapter.getRegisteredFragment(2)).initializeChart(amplitube, amplitube.length);
-        }
-        else
-        {
-            adapter.instantiateItem(pager, 2);
-            ((ChartFragment)adapter.getRegisteredFragment(2)).initializeChart(amplitube, amplitube.length);
-        }
+        float freq = message.getBucket()*((float)DefaultParameters.RECORDER_SAMPLERATE)/ DefaultParameters.SAMPLE_SIZE;
+        currentFrequency.setText(String.format("%1.2f Hz",freq));
     }
 
     /*
@@ -198,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getRegisteredFragment(int position) {
             return registeredFragments.get(position);
         }
+
         @Override
         public Fragment getItem(int pos) {
             switch(pos) {
@@ -213,4 +182,20 @@ public class MainActivity extends AppCompatActivity {
             return NUM_ITEMS;
         }
     }
+
+    public static class FrequencyDataMessage
+    {
+        private int bucket;
+
+        public FrequencyDataMessage(int bucket)
+        {
+            this.bucket = bucket;
+        }
+
+        public int getBucket()
+        {
+            return bucket;
+        }
+    }
+
 }

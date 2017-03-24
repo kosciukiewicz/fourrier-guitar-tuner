@@ -1,8 +1,5 @@
 package com.example.witold.wicioguitartuner;
 
-import android.content.Context;
-import android.content.res.Resources;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,16 +9,21 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.LineChart;
+import com.example.witold.wicioguitartuner.AudioAnalysis.FrequencySet;
 import com.github.pavlospt.roundedletterview.RoundedLetterView;
 
-import org.w3c.dom.Text;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 
 public class TunerFragment extends Fragment {
     RoundedLetterView noteView;
     TextView freqValue;
     ImageView arrowUp;
     ImageView arrowDown;
+    FrequencySet frequencySet;
+
     public TunerFragment() {
         // Required empty public constructor
     }
@@ -39,13 +41,45 @@ public class TunerFragment extends Fragment {
         return view;
     }
 
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
     private void initializeComponents(View view)
     {
         noteView = (RoundedLetterView) view.findViewById(R.id.noteView);
         freqValue = (TextView) view.findViewById(R.id.textViewClosestFreqValue) ;
         arrowUp = (ImageView) view.findViewById(R.id.imageViewArrowUp);
         arrowDown = (ImageView) view.findViewById(R.id.imageViewArrowDown);
+        frequencySet = new FrequencySet();
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void setFrequency(MainActivity.FrequencyDataMessage message) {
+        float freq = message.getBucket()*((float)DefaultParameters.RECORDER_SAMPLERATE)/DefaultParameters.SAMPLE_SIZE;
+        float accuracy =  freq/120; //the bigger freq value the bigger tolrence of tuner
+        SingleFrequency closestFrequency = frequencySet.findClosest(message.getBucket());
+        setNoteTextView(closestFrequency);
+        if (freq - closestFrequency.getFreqValue() > accuracy) {
+            setArrowsTooHigh();
+        } else {
+            if (freq - closestFrequency.getFreqValue() < -accuracy) {
+                setArrowsTooLow();
+            } else {
+                setArrowsEqual();
+            }
+        }
+    }
+
 
     public void setArrowsTooHigh()
     {

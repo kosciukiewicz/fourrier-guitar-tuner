@@ -19,6 +19,10 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +54,23 @@ public class ChartFragment extends Fragment {
         return f;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(AmplitubeDataMessage event) {
+        initializeChart(event.getAmplitubeData(), event.getAmplitubeData().length);
+    };
+
     public void initializeChart(Complex[] dataObjects, int maxChartValue) {
         if (chart != null) {
             List<Entry> entries = new ArrayList<>();
@@ -73,6 +94,20 @@ public class ChartFragment extends Fragment {
             chart.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
             chart.setData(lineData);
             chart.invalidate();
+        }
+    }
+
+    public static class AmplitubeDataMessage
+    {
+        private Complex[] amplitubeData;
+
+        public AmplitubeDataMessage(Complex[] dataObjects)
+        {
+            this.amplitubeData = dataObjects;
+        }
+
+        public Complex[] getAmplitubeData() {
+            return amplitubeData;
         }
     }
 }

@@ -18,6 +18,10 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +55,23 @@ public class FFTChartFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(FFTChartDataMessage event) {
+        initializeChart(event.getDataObjects(), DefaultParameters.MAX_FOURIER_CHART_FREQ);
+    };
+
     public void initializeChart(Complex[] dataObjects, int maxChartValue) {
 
         List<Entry> entries = new ArrayList<>();
@@ -74,5 +95,19 @@ public class FFTChartFragment extends Fragment {
         chart.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
         chart.setData(lineData);
         chart.invalidate();
+    }
+
+    public static class FFTChartDataMessage
+    {
+        private Complex[] dataObjects;
+
+        public FFTChartDataMessage(Complex[] dataObjects)
+        {
+            this.dataObjects = dataObjects;
+        }
+
+        public Complex[] getDataObjects() {
+            return dataObjects;
+        }
     }
 }

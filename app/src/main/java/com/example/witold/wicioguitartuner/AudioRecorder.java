@@ -10,6 +10,8 @@ import com.example.witold.wicioguitartuner.AudioAnalysis.Complex;
 import com.example.witold.wicioguitartuner.AudioAnalysis.FFT;
 import com.example.witold.wicioguitartuner.AudioAnalysis.SoundAnalysis;
 
+import org.greenrobot.eventbus.EventBus;
+
 /**
  * Created by Witold on 2016-12-01.
  */
@@ -111,16 +113,13 @@ public class AudioRecorder {
                 complexResult[i] = new Complex(data[i], 0.0);
             }
             final Complex[] complexResultFromFFT = FFT.fft(SoundAnalysis.hanningWindow(complexResult,complexResult.length));
-            context.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    context.initializeChart(complexResult,complexResultFromFFT);
-                    context.setMaxFreq(getMax(complexResultFromFFT));
-                }
-            });
+
+            EventBus.getDefault().post(new ChartFragment.AmplitubeDataMessage(complexResult));
+            EventBus.getDefault().post(new FFTChartFragment.FFTChartDataMessage(complexResultFromFFT));
+            EventBus.getDefault().post(new MainActivity.FrequencyDataMessage(getMax(complexResultFromFFT)));
         }
 
-        protected int getMax(Complex[] data) //zwraca kubełek nie częstotliwośc
+        protected int getMax(Complex[] data) //zwraca kubełek a nie częstotliwość
         {
             int index = 0;
             double max = Math.abs(data[0].re);
