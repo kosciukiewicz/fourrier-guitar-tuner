@@ -1,4 +1,4 @@
-package com.example.witold.wicioguitartuner;
+package com.example.witold.wicioguitartuner.AudioProvider;
 
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
@@ -6,23 +6,25 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.witold.wicioguitartuner.AudioAnalysis.Complex;
-import com.example.witold.wicioguitartuner.AudioAnalysis.FFT;
-import com.example.witold.wicioguitartuner.AudioAnalysis.SoundAnalysis;
+import com.example.witold.wicioguitartuner.AudioProvider.AudioAnalysis.AudioAnalysis;
+import com.example.witold.wicioguitartuner.AudioProvider.AudioAnalysis.Complex;
+import com.example.witold.wicioguitartuner.ChartFragment;
+import com.example.witold.wicioguitartuner.DefaultParameters;
+import com.example.witold.wicioguitartuner.FFTChartFragment;
+import com.example.witold.wicioguitartuner.MainActivity;
 
 import org.greenrobot.eventbus.EventBus;
 
 /**
- * Created by Witold on 2016-12-01.
+ * Sound recording provider.
  */
 public class AudioRecorder {
 
-    RecordAudio playTask;
-    MainActivity context;
-    int sampleSize;
-    int bufferSize;
-    int minimalLoudness;
-    boolean isRecording = false;
+    private MainActivity context;
+    private int sampleSize;
+    private int bufferSize;
+    private int minimalLoudness;
+    private boolean isRecording = false;
 
     public AudioRecorder(MainActivity context, int sampleSize, int bufferSize, int minimalLoudness) {
         this.context = context;
@@ -31,8 +33,9 @@ public class AudioRecorder {
         this.minimalLoudness = minimalLoudness;
     }
 
+
     public void StartRecording() {
-        playTask = new RecordAudio();
+        RecordAudioTask playTask = new RecordAudioTask();
         playTask.execute();
     }
 
@@ -40,11 +43,12 @@ public class AudioRecorder {
         isRecording = false;
     }
 
-    private class RecordAudio extends AsyncTask<Void, Integer, Void> {
+    private class RecordAudioTask extends AsyncTask<Void, Integer, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             isRecording = true;
             try {
+
                 final double[] sample = new double[sampleSize];
                 int sampleIndex = 0;
                 boolean loudness = false;
@@ -105,14 +109,14 @@ public class AudioRecorder {
             return null;
         }
 
-        protected void calculate(final double[] data, int size) //po udanym nagraniu próbki liczy FFT
+        protected void calculate(final double[] data, int size) //po udanym nagraniu próbki liczy AudioAnalysis
         {
             final Complex[] complexResult = new Complex[size]; //najpierw zamiana na wartości zespolone
             for(int i= 0; i < size; i++)
             {
                 complexResult[i] = new Complex(data[i], 0.0);
             }
-            final Complex[] complexResultFromFFT = FFT.fft(SoundAnalysis.hanningWindow(complexResult,complexResult.length));
+            final Complex[] complexResultFromFFT = AudioAnalysis.fft(AudioAnalysis.hanningWindow(complexResult,complexResult.length));
 
             EventBus.getDefault().post(new ChartFragment.AmplitubeDataMessage(complexResult));
             EventBus.getDefault().post(new FFTChartFragment.FFTChartDataMessage(complexResultFromFFT));

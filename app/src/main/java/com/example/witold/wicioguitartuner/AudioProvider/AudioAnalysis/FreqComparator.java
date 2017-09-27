@@ -1,4 +1,4 @@
-package com.example.witold.wicioguitartuner.AudioAnalysis;
+package com.example.witold.wicioguitartuner.AudioProvider.AudioAnalysis;
 
 import com.example.witold.wicioguitartuner.SingleFrequency;
 

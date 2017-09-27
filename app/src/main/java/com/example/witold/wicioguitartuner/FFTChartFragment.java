@@ -1,17 +1,13 @@
 package com.example.witold.wicioguitartuner;
 
-import android.content.Context;
-import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.witold.wicioguitartuner.AudioAnalysis.Complex;
+import com.example.witold.wicioguitartuner.AudioProvider.AudioAnalysis.Complex;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;

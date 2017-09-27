@@ -1,7 +1,7 @@
-package com.example.witold.wicioguitartuner.AudioAnalysis;
+package com.example.witold.wicioguitartuner.AudioProvider.AudioAnalysis;
 
 /**
- * Created by Witold on 2016-12-01.
+ * Class for computetion on complex numbers
  */
 public class Complex {
     public final double re;

@@ -1,4 +1,4 @@
-package com.example.witold.wicioguitartuner.AudioAnalysis;
+package com.example.witold.wicioguitartuner.AudioProvider.AudioAnalysis;
 
 import android.util.Log;
 
@@ -6,9 +6,7 @@ import com.example.witold.wicioguitartuner.SingleFrequency;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 
 /**
  * Created by Witold on 2016-12-04.
@@ -17,13 +15,12 @@ public class FrequencySet {
     private ArrayList<SingleFrequency> freqArray;
     private ArrayList<Integer> bucketArray;
 
-    public FrequencySet()
-    {
+    public FrequencySet() {
         initializeSet();
+        bucketArray = getBucketArray(freqArray);
     }
 
-    public void initializeSet()
-    {
+    private void initializeSet() {
         SingleFrequency[] arrayF = {
                 new SingleFrequency(41.2, "E1"),
                 new SingleFrequency(82.4, "E2"),
@@ -56,22 +53,25 @@ public class FrequencySet {
                 new SingleFrequency(987.8, "B5"),
                 new SingleFrequency(1975.5, "B6")};
 
-        freqArray = new ArrayList<SingleFrequency>(Arrays.asList(arrayF));
+        freqArray = new ArrayList<>(Arrays.asList(arrayF));
         Collections.sort(freqArray, new FreqComparator());
-        initializeBucketArray();
     }
 
-    private void initializeBucketArray()
-    {
-        bucketArray = new ArrayList<>();
-        for(SingleFrequency singleFrequency : freqArray)
-        {
+    /**
+     * Method to transform frequency array to array containing matching buckets (look Fast Fourrier Transformation Algorithm)
+     */
+    private ArrayList<Integer> getBucketArray(ArrayList<SingleFrequency> freqArray) {
+        ArrayList<Integer> bucketArray = new ArrayList<>();
+        for(SingleFrequency singleFrequency : freqArray){
             bucketArray.add(singleFrequency.getBucket());
         }
+        return bucketArray;
     }
 
-    public SingleFrequency findClosest(int bucket)
-    {
+    /**
+     * Method to find closest sound to given frequency (as bucket)
+     */
+    public SingleFrequency findClosest(int bucket) {
         int index = Collections.binarySearch(bucketArray, bucket);
         index = index >= 0 ? index : (-index) - 1;
         int closestIndex;
@@ -80,13 +80,5 @@ public class FrequencySet {
         }
         else closestIndex = index;
         return freqArray.get(closestIndex);
-    }
-
-    public void printAll()
-    {
-        for(SingleFrequency singleFrequency : freqArray)
-        {
-            Log.d("", singleFrequency.toString());
-        }
     }
 }

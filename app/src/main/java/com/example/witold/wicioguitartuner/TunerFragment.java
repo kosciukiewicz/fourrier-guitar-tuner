@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.witold.wicioguitartuner.AudioAnalysis.FrequencySet;
+import com.example.witold.wicioguitartuner.AudioProvider.AudioAnalysis.FrequencySet;
 import com.github.pavlospt.roundedletterview.RoundedLetterView;
 
 import org.greenrobot.eventbus.EventBus;

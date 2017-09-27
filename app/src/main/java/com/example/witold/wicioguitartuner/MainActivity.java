@@ -12,7 +12,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.example.witold.wicioguitartuner.AudioProvider.AudioRecorder;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -51,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
         EventBus.getDefault().register(this);
         initializeComponents();
         initializeNavBar();
-        Toast.makeText(getApplicationContext(), "" + adapter.registeredFragments.size(),Toast.LENGTH_SHORT).show();
     }
 
     private void initializeNavBar() {
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 new NavigationTabBar.Model.Builder(
                         getResources().getDrawable(R.drawable.ic_fourier),
                         (R.color.colorAccent)
-                ).title("FFT Chart")
+                ).title("AudioAnalysis Chart")
                         .build()
         );
         models.add(

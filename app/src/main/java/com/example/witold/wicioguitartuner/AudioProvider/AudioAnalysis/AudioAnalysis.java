@@ -1,11 +1,14 @@
-package com.example.witold.wicioguitartuner.AudioAnalysis;
+package com.example.witold.wicioguitartuner.AudioProvider.AudioAnalysis;
 
 /**
- * Created by Witold on 2016-12-01.
+ * Fast Fourrier Transforamtion implementation
  */
-public class FFT {
+public class AudioAnalysis {
 
-    public static int bitReverse(int n, int bits) {
+    /**
+     * Bit reverse transformation for result presetation
+     */
+    private static int bitReverse(int n, int bits) {
         int reversedN = n;
         int count = bits - 1;
 
@@ -19,6 +22,9 @@ public class FFT {
         return ((reversedN << count) & ((1 << bits) - 1));
     }
 
+    /**
+     * Fast Fourrier Transforamtion method.
+     */
     public static Complex[] fft(Complex[] buffer) {
 
         int bits = (int) (Math.log(buffer.length) / Math.log(2));
@@ -50,18 +56,11 @@ public class FFT {
         return buffer;
     }
 
-    public static void main(String[] args) {
-        double[] input = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0};
-
-        Complex[] cinput = new Complex[input.length];
-        for (int i = 0; i < input.length; i++)
-            cinput[i] = new Complex(input[i], 0.0);
-
-        fft(cinput);
-
-        System.out.println("Results:");
-        for (Complex c : cinput) {
-            System.out.println(c);
+    public static Complex[] hanningWindow(Complex[] data, int size) {
+        Complex[] result = new Complex[size];
+        for (int i = 0; i < size; i++) {
+            result[i] = new Complex(data[i].re * 0.5 * (1.0 - Math.cos(2.0 * Math.PI * i / (size - 1))),0.0);
         }
+        return result;
     }
 }
