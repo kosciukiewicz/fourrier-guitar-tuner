@@ -1,6 +1,6 @@
 package com.example.witold.wicioguitartuner.AudioProvider.AudioAnalysis;
 
-import com.example.witold.wicioguitartuner.SingleFrequency;
+import com.example.witold.wicioguitartuner.AudioProvider.SingleFrequency;
 
 import java.util.Comparator;
 

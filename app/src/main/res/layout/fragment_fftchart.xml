@@ -8,7 +8,7 @@
     android:paddingLeft="15dp"
     android:background="@color/colorPrimaryLight"
     android:paddingTop="15dp"
-    tools:context="com.example.witold.wicioguitartuner.FFTChartFragment">
+    tools:context="com.example.witold.wicioguitartuner.FFTChartFragment.FFTChartFragment">
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chartFFT"

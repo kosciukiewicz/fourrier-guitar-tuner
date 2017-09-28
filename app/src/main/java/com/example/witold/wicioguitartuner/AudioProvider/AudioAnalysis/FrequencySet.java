@@ -1,8 +1,6 @@
 package com.example.witold.wicioguitartuner.AudioProvider.AudioAnalysis;
 
-import android.util.Log;
-
-import com.example.witold.wicioguitartuner.SingleFrequency;
+import com.example.witold.wicioguitartuner.AudioProvider.SingleFrequency;
 
 import java.util.ArrayList;
 import java.util.Arrays;

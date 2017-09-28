@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:background="@color/colorPrimaryLight"
     android:layout_height="match_parent"
-    tools:context="com.example.witold.wicioguitartuner.TunerFragment">
+    tools:context="com.example.witold.wicioguitartuner.TunerFragment.TunerFragment">
 
     <com.github.pavlospt.roundedletterview.RoundedLetterView
         xmlns:app="http://schemas.android.com/apk/res-auto"

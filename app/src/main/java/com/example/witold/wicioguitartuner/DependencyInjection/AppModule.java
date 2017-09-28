@@ -1,11 +1,10 @@
-package com.witold.dagger_mvp_taks_app.DependencyInjection;
+package com.example.witold.wicioguitartuner.DependencyInjection;
 
 import android.app.Application;
 import android.content.Context;
 
 import dagger.Binds;
 import dagger.Module;
-import dagger.Provides;
 
 /**
  * Created by Witold on 26.08.2017.

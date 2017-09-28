@@ -5,6 +5,7 @@
 
     <application
         android:allowBackup="true"
+        android:name=".GuitarTunerApplication"
         android:icon="@drawable/icon_guitar_pick"
         android:label="@string/app_name"
         android:supportsRtl="true"

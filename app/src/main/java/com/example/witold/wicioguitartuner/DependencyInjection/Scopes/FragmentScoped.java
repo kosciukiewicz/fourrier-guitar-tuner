@@ -1,4 +1,4 @@
-package com.witold.dagger_mvp_taks_app.DependencyInjection.Scopes;
+package com.example.witold.wicioguitartuner.DependencyInjection.Scopes;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

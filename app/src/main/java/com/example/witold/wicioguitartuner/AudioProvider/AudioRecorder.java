@@ -1,17 +1,14 @@
 package com.example.witold.wicioguitartuner.AudioProvider;
 
-import android.content.Context;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.witold.wicioguitartuner.AudioProvider.AudioAnalysis.AudioAnalysis;
 import com.example.witold.wicioguitartuner.AudioProvider.AudioAnalysis.Complex;
-import com.example.witold.wicioguitartuner.ChartFragment;
-import com.example.witold.wicioguitartuner.DefaultParameters;
-import com.example.witold.wicioguitartuner.FFTChartFragment;
+import com.example.witold.wicioguitartuner.AmplitudeChartFragment.AmplitudeChartFragment;
+import com.example.witold.wicioguitartuner.FFTChartFragment.FFTChartFragment;
 import com.example.witold.wicioguitartuner.MainActivity;
 
 import org.greenrobot.eventbus.EventBus;
@@ -27,7 +24,6 @@ import io.reactivex.annotations.NonNull;
 public class AudioRecorder {
 
     private static AudioRecorder audioRecorderInstance;
-    private MainActivity context;
     private int sampleSize;
     private int bufferSize;
     private int minimalLoudness;
@@ -35,13 +31,12 @@ public class AudioRecorder {
 
     public static AudioRecorder getInstance(MainActivity context){
         if(audioRecorderInstance == null){
-            audioRecorderInstance = new AudioRecorder(context, DefaultParameters.SAMPLE_SIZE, DefaultParameters.BUFFER_SIZE, 50);
+            audioRecorderInstance = new AudioRecorder(DefaultParameters.SAMPLE_SIZE, DefaultParameters.BUFFER_SIZE, 50);
         }
         return audioRecorderInstance;
     }
 
-    private AudioRecorder(MainActivity context, int sampleSize, int bufferSize, int minimalLoudness) {
-        this.context = context;
+    public AudioRecorder(int sampleSize, int bufferSize, int minimalLoudness) {
         this.sampleSize = sampleSize;
         this.bufferSize = bufferSize;
         this.minimalLoudness = minimalLoudness;
@@ -83,12 +78,6 @@ public class AudioRecorder {
                         if (totalAbsValue > minimalLoudness) //jeżeli głośność jest wystarczająca to dodaje nagrany buffor do próbki którą będziemy analizować.
                         {
                             if (!loudness) {
-                                context.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        context.setRecording(true);
-                                    }
-                                });
                                 loudness = true;
                             }
                             for (int i = 0; i < bufferSize; i +=1) {
@@ -97,12 +86,6 @@ public class AudioRecorder {
                             }
                         } else {
                             if (loudness) {
-                                context.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        context.setRecording(false);
-                                    }
-                                });
                                 loudness=false;
                             }
                         }
@@ -152,12 +135,6 @@ public class AudioRecorder {
                     if (totalAbsValue > minimalLoudness) //jeżeli głośność jest wystarczająca to dodaje nagrany buffor do próbki którą będziemy analizować.
                     {
                         if (!loudness) {
-                            context.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    context.setRecording(true);
-                                }
-                            });
                             loudness = true;
                         }
                         for (int i = 0; i < bufferSize; i +=1) {
@@ -166,12 +143,6 @@ public class AudioRecorder {
                         }
                     } else {
                         if (loudness) {
-                            context.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    context.setRecording(false);
-                                }
-                            });
                             loudness=false;
                         }
                     }
@@ -200,10 +171,6 @@ public class AudioRecorder {
                 complexResult[i] = new Complex(data[i], 0.0);
             }
             final Complex[] complexResultFromFFT = AudioAnalysis.fft(AudioAnalysis.hanningWindow(complexResult,complexResult.length));
-
-            EventBus.getDefault().post(new ChartFragment.AmplitubeDataMessage(complexResult));
-            EventBus.getDefault().post(new FFTChartFragment.FFTChartDataMessage(complexResultFromFFT));
-            EventBus.getDefault().post(new MainActivity.FrequencyDataMessage(getMax(complexResultFromFFT)));
         }
 
         protected int getMax(Complex[] data) //zwraca kubełek a nie częstotliwość
@@ -225,18 +192,6 @@ public class AudioRecorder {
         }
 
         protected void onPostExecute(Void result) {
-            context.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    context.setRecording(false);
-                }
-            });
-            context.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(context, "Koniec nagrywania", Toast.LENGTH_SHORT).show();
-                }
-            });
         }
 
     }

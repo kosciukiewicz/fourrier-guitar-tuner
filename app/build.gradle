@@ -30,7 +30,6 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:25.3.1'
     compile 'devlight.io:navigationtabbar:1.2.5'
     compile 'com.github.pavlospt:roundedletterview:1.2'
-    compile 'org.greenrobot:eventbus:3.0.0'
 
     //Butterknife
     compile 'com.jakewharton:butterknife:8.8.1'

@@ -1,4 +1,4 @@
-package com.example.witold.wicioguitartuner;
+package com.example.witold.wicioguitartuner.AudioProvider;
 
 /**
  * Created by Witold on 2016-12-04.

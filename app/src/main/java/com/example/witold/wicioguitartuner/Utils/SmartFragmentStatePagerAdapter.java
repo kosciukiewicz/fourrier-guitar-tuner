@@ -1,4 +1,4 @@
-package com.example.witold.wicioguitartuner.AmplitudeChartFragment.Utils;
+package com.example.witold.wicioguitartuner.Utils;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,7 +14,7 @@ import com.example.witold.wicioguitartuner.TunerFragment.TunerFragment;
  * Created by Witold on 28.09.2017.
  */
 
-public class SmartFragmentStatePagerAdapter {
+public class SmartFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
         private int NUM_ITEMS = 3;
         private SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();
 

@@ -1,5 +1,6 @@
-package com.example.witold.wicioguitartuner;
+package com.example.witold.wicioguitartuner.TunerFragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,20 +11,32 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.witold.wicioguitartuner.AudioProvider.AudioAnalysis.FrequencySet;
+import com.example.witold.wicioguitartuner.AudioProvider.DefaultParameters;
+import com.example.witold.wicioguitartuner.AudioProvider.SingleFrequency;
+import com.example.witold.wicioguitartuner.MainActivity;
+import com.example.witold.wicioguitartuner.R;
 import com.github.pavlospt.roundedletterview.RoundedLetterView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import javax.inject.Inject;
 
-public class TunerFragment extends Fragment {
+import dagger.android.support.AndroidSupportInjection;
+import dagger.android.support.DaggerFragment;
+
+
+public class TunerFragment extends DaggerFragment implements TunerContract.TunerView{
     RoundedLetterView noteView;
     TextView freqValue;
     ImageView arrowUp;
     ImageView arrowDown;
     FrequencySet frequencySet;
+    @Inject
+    TunerPresenter tunerPresenter;
 
+    @Inject
     public TunerFragment() {
         // Required empty public constructor
     }
@@ -31,6 +44,11 @@ public class TunerFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initlalizePresenter();
+    }
+
+    private void initlalizePresenter() {
+        tunerPresenter.onViewAttached(this);
     }
 
     @Override
@@ -54,6 +72,12 @@ public class TunerFragment extends Fragment {
         EventBus.getDefault().unregister(this);
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        AndroidSupportInjection.inject(this);
+    }
+
     private void initializeComponents(View view)
     {
         noteView = (RoundedLetterView) view.findViewById(R.id.noteView);
@@ -62,24 +86,6 @@ public class TunerFragment extends Fragment {
         arrowDown = (ImageView) view.findViewById(R.id.imageViewArrowDown);
         frequencySet = new FrequencySet();
     }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void setFrequency(MainActivity.FrequencyDataMessage message) {
-        float freq = message.getBucket()*((float)DefaultParameters.RECORDER_SAMPLERATE)/DefaultParameters.SAMPLE_SIZE;
-        float accuracy =  freq/120; //the bigger freq value the bigger tolrence of tuner
-        SingleFrequency closestFrequency = frequencySet.findClosest(message.getBucket());
-        setNoteTextView(closestFrequency);
-        if (freq - closestFrequency.getFreqValue() > accuracy) {
-            setArrowsTooHigh();
-        } else {
-            if (freq - closestFrequency.getFreqValue() < -accuracy) {
-                setArrowsTooLow();
-            } else {
-                setArrowsEqual();
-            }
-        }
-    }
-
 
     public void setArrowsTooHigh()
     {
@@ -114,7 +120,7 @@ public class TunerFragment extends Fragment {
 
     public void setNoteTextView(SingleFrequency frequency)
     {
-        noteView.setTitleText(frequency.note);
-        freqValue.setText("( "+String.valueOf(frequency.freqValue) + "Hz )");
+        noteView.setTitleText(frequency.getNote());
+        freqValue.setText("( "+String.valueOf(frequency.getFreqValue()) + "Hz )");
     }
 }

@@ -1,15 +1,9 @@
-package com.witold.dagger_mvp_taks_app.DependencyInjection;
+package com.example.witold.wicioguitartuner.DependencyInjection;
 
 import android.app.Application;
 
-import com.squareup.picasso.Picasso;
-import com.witold.dagger_mvp_taks_app.DependencyInjection.Network.NetworkModule;
-import com.witold.dagger_mvp_taks_app.DependencyInjection.Picasso.PicassoModule;
-import com.witold.dagger_mvp_taks_app.DependencyInjection.Retrofit.RetrofitModule;
-import com.witold.dagger_mvp_taks_app.DependencyInjection.Scopes.ApplicationScope;
-import com.witold.dagger_mvp_taks_app.MainApplication;
-
-import javax.inject.Singleton;
+import com.example.witold.wicioguitartuner.DependencyInjection.Scopes.ApplicationScope;
+import com.example.witold.wicioguitartuner.GuitarTunerApplication;
 
 import dagger.BindsInstance;
 import dagger.Component;
@@ -22,15 +16,14 @@ import dagger.android.support.AndroidSupportInjectionModule;
  */
 @ApplicationScope
 @Component(modules = {
-        RetrofitModule.class,
-        PicassoModule.class,
+        AudioRecorderModule.class,
         AppModule.class,
         ActivityBindingModule.class,
         AndroidSupportInjectionModule.class})
 
 public interface ApplicationComponent extends AndroidInjector<DaggerApplication> {
 
-    void inject(MainApplication application);
+    void inject(GuitarTunerApplication guitarTunerApplication);
 
     @Override
     void inject(DaggerApplication instance);
@@ -39,6 +32,5 @@ public interface ApplicationComponent extends AndroidInjector<DaggerApplication>
     interface Builder {
         @BindsInstance
         ApplicationComponent.Builder application(Application application);
-
         ApplicationComponent build();
     }}

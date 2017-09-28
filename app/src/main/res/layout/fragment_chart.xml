@@ -7,7 +7,7 @@
     android:paddingLeft="15dp"
     android:background="@color/colorPrimaryLight"
     android:paddingTop="15dp"
-    tools:context=".ChartFragment">
+    tools:context=".AmplitudeChartFragment.AmplitudeChartFragment">
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
