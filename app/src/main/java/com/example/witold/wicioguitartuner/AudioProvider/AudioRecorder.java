@@ -1,5 +1,6 @@
 package com.example.witold.wicioguitartuner.AudioProvider;
 
+import android.content.Context;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
@@ -15,18 +16,31 @@ import com.example.witold.wicioguitartuner.MainActivity;
 
 import org.greenrobot.eventbus.EventBus;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.annotations.NonNull;
+
 /**
  * Sound recording provider.
  */
 public class AudioRecorder {
 
+    private static AudioRecorder audioRecorderInstance;
     private MainActivity context;
     private int sampleSize;
     private int bufferSize;
     private int minimalLoudness;
     private boolean isRecording = false;
 
-    public AudioRecorder(MainActivity context, int sampleSize, int bufferSize, int minimalLoudness) {
+    public static AudioRecorder getInstance(MainActivity context){
+        if(audioRecorderInstance == null){
+            audioRecorderInstance = new AudioRecorder(context, DefaultParameters.SAMPLE_SIZE, DefaultParameters.BUFFER_SIZE, 50);
+        }
+        return audioRecorderInstance;
+    }
+
+    private AudioRecorder(MainActivity context, int sampleSize, int bufferSize, int minimalLoudness) {
         this.context = context;
         this.sampleSize = sampleSize;
         this.bufferSize = bufferSize;
@@ -41,6 +55,75 @@ public class AudioRecorder {
 
     public void StopRecording() {
         isRecording = false;
+    }
+
+    public Observable<double[]> getRecordObservable(){
+        Observable<double[]> recordObservable = Observable.create(new ObservableOnSubscribe<double[]>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<double[]> emitter) throws Exception {
+                isRecording = true;
+                try{
+                    final double[] sample = new double[sampleSize];
+                    int sampleIndex = 0;
+                    boolean loudness = false;
+
+                    AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, DefaultParameters.RECORDER_SAMPLERATE, DefaultParameters.RECORDER_CHANNELS, DefaultParameters.RECORDER_AUDIO_ENCODING, bufferSize);
+                    final short[] buffer = new short[bufferSize];
+                    audioRecord.startRecording();
+                    while (isRecording) { //record until the sample size is bug enough;
+
+                        final int numberOfReadBytes = audioRecord.read(buffer, 0, bufferSize);
+                        float totalAbsValue = 0.0f;
+
+                        for (int i = 0; i < numberOfReadBytes; i +=2) //sprawdza głośność tylko.
+                        {
+                            totalAbsValue += Math.abs(buffer[i]) / (numberOfReadBytes/2);
+                        }
+
+                        if (totalAbsValue > minimalLoudness) //jeżeli głośność jest wystarczająca to dodaje nagrany buffor do próbki którą będziemy analizować.
+                        {
+                            if (!loudness) {
+                                context.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        context.setRecording(true);
+                                    }
+                                });
+                                loudness = true;
+                            }
+                            for (int i = 0; i < bufferSize; i +=1) {
+                                sample[sampleIndex] = buffer[i];
+                                sampleIndex++;
+                            }
+                        } else {
+                            if (loudness) {
+                                context.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        context.setRecording(false);
+                                    }
+                                });
+                                loudness=false;
+                            }
+                        }
+                        if(sampleIndex >= sampleSize)
+                        {
+                            sampleIndex = 0;
+                            emitter.onNext(sample);
+
+                        }
+                    }
+                    audioRecord.stop();
+                    audioRecord.release();
+                    Log.d("AudioRecorder", "Observable Complete");
+                    emitter.onComplete();
+                }catch (Exception exception){
+                    emitter.onError(exception);
+                }
+            }
+        });
+
+        return recordObservable;
     }
 
     private class RecordAudioTask extends AsyncTask<Void, Integer, Void> {

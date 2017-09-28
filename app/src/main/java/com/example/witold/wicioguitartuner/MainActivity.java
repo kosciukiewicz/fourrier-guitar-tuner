@@ -6,12 +6,14 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.witold.wicioguitartuner.AudioProvider.AudioRecorder;
 
@@ -22,6 +24,11 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 
 import devlight.io.library.ntb.NavigationTabBar;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -91,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         buttonStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                initializeAudioRecorded();
+                initializeAudioRecorderAndSubcribeObservable();
             }
         });
         buttonFinish.setOnClickListener(new View.OnClickListener() {
@@ -103,11 +110,33 @@ public class MainActivity extends AppCompatActivity {
         imageViewStatus = (ImageView) findViewById(R.id.imageViewStatus);
     }
 
-    private void initializeAudioRecorded()   //Initialize audioRecorder
+    private void initializeAudioRecorderAndSubcribeObservable()   //Initialize audioRecorder
     {
         if(audioRecorder==null) {
-            audioRecorder = new AudioRecorder(this, DefaultParameters.SAMPLE_SIZE, DefaultParameters.BUFFER_SIZE, 50);
-            audioRecorder.StartRecording();
+            audioRecorder = AudioRecorder.getInstance(this);
+            audioRecorder.getRecordObservable().subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<double[]>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@NonNull double[] doubles) {
+                        Log.d("Main", "Leci nastepny sample");
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Toast.makeText(getApplicationContext(), "Koniec nagrywania", Toast.LENGTH_SHORT).show();
+                    }
+                });
         }
     }
 
