@@ -12,4 +12,5 @@ public class DefaultParameters {
     public static final int SAMPLE_SIZE = 8192;
     public static final int MAX_FOURIER_CHART_FREQ = 1200;
     public static final int BUFFER_SIZE = 2048;
+    public static final int MINIMAL_LOUDNESS = 50;
 }

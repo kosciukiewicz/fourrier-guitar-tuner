@@ -25,6 +25,9 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.android.support.DaggerFragment;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
@@ -32,9 +35,11 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 
-public class FFTChartFragment extends Fragment {
+public class FFTChartFragment extends DaggerFragment {
     static LineChart chart;
-    private AudioRecorder audioRecorder;
+
+    @Inject
+    AudioRecorder audioRecorder;
 
     public FFTChartFragment() {
         // Required empty public constructor
@@ -65,12 +70,11 @@ public class FFTChartFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initializeAudioRecorderAndSubcribeObservable();
+        Log.d("Fragment", audioRecorder + "");
     }
 
     private void initializeAudioRecorderAndSubcribeObservable()   //Initialize audioRecorder
     {
-        if(audioRecorder==null) {
-            audioRecorder = AudioRecorder.getInstance((MainActivity) getActivity());
             audioRecorder.getRecordObservable().subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<double[]>() {
@@ -94,7 +98,6 @@ public class FFTChartFragment extends Fragment {
                             Toast.makeText(getContext(), "Koniec nagrywania", Toast.LENGTH_SHORT).show();
                         }
                     });
-        }
     }
 
     @Override
