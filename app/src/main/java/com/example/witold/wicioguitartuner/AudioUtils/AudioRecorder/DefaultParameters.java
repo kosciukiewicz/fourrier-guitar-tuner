@@ -1,4 +1,4 @@
-package com.example.witold.wicioguitartuner.AudioProvider;
+package com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder;
 
 import android.media.AudioFormat;
 

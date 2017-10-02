@@ -1,4 +1,4 @@
-package com.example.witold.wicioguitartuner.AudioProvider.AudioAnalysis;
+package com.example.witold.wicioguitartuner.AudioUtils.AudioAnalysis;
 
 /**
  * Class for computetion on complex numbers

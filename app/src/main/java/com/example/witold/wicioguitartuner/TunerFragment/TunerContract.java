@@ -1,6 +1,6 @@
 package com.example.witold.wicioguitartuner.TunerFragment;
 
-import com.example.witold.wicioguitartuner.AudioProvider.SingleFrequency;
+import com.example.witold.wicioguitartuner.AudioUtils.SingleFrequency;
 import com.example.witold.wicioguitartuner.BaseInterfaces.BasePresenter;
 import com.example.witold.wicioguitartuner.BaseInterfaces.BaseView;
 

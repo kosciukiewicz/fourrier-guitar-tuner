@@ -1,8 +1,6 @@
 package com.example.witold.wicioguitartuner.AmplitudeChartFragment;
 
-import android.util.Log;
-
-import com.example.witold.wicioguitartuner.AudioProvider.AudioRecorder;
+import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.AudioRecorder;
 
 import javax.inject.Inject;
 

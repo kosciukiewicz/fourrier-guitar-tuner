@@ -2,13 +2,12 @@ package com.example.witold.wicioguitartuner.AmplitudeChartFragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.witold.wicioguitartuner.AudioProvider.AudioAnalysis.Complex;
-import com.example.witold.wicioguitartuner.AudioProvider.DefaultParameters;
+import com.example.witold.wicioguitartuner.AudioUtils.AudioAnalysis.Complex;
+import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.DefaultParameters;
 import com.example.witold.wicioguitartuner.R;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -16,10 +15,6 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,18 +59,6 @@ public class AmplitudeChartFragment extends DaggerFragment implements AmplitudeC
         b.putString("msg", text);
         f.setArguments(b);
         return f;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
     }
 
     @Override

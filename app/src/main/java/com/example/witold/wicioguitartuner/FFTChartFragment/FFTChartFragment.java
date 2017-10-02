@@ -1,6 +1,5 @@
 package com.example.witold.wicioguitartuner.FFTChartFragment;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -9,10 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.witold.wicioguitartuner.AudioProvider.AudioAnalysis.Complex;
-import com.example.witold.wicioguitartuner.AudioProvider.AudioRecorder;
-import com.example.witold.wicioguitartuner.AudioProvider.DefaultParameters;
+import com.example.witold.wicioguitartuner.AudioUtils.AudioAnalysis.Complex;
+import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.AudioRecorder;
+import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.AudioRecorderRxWrapper;
+import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.DefaultParameters;
 import com.example.witold.wicioguitartuner.R;
+import com.example.witold.wicioguitartuner.Utils.RxBus.RxBus;
+import com.example.witold.wicioguitartuner.Utils.RxBus.StartRecordingEvent;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -20,21 +22,17 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.android.support.AndroidSupportInjection;
 import dagger.android.support.DaggerFragment;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 
@@ -42,10 +40,13 @@ public class FFTChartFragment extends DaggerFragment implements FFTChartContract
     static LineChart chart;
 
     @Inject
-    AudioRecorder audioRecorder;
+    AudioRecorderRxWrapper audioRecorderRxWrapper;
 
     @Inject
     FFTChartPresenter fftChartPresenter;
+
+    @Inject
+    RxBus rxBus;
 
     @Inject
     public FFTChartFragment() {
@@ -82,34 +83,40 @@ public class FFTChartFragment extends DaggerFragment implements FFTChartContract
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initializeAudioRecorderAndSubcribeObservable();
-        Log.d("Fragment", audioRecorder + "");
+        rxBus.getEventObservable().subscribe(new Consumer<StartRecordingEvent>() {
+            @Override
+            public void accept(StartRecordingEvent startRecordingEvent) throws Exception {
+                initializeAudioRecorderAndSubcribeObservable();
+            }
+        });
+        Log.d("Fragment", audioRecorderRxWrapper + "");
     }
 
     private void initializeAudioRecorderAndSubcribeObservable()   //Initialize audioRecorder
     {
-            audioRecorder.getRecordObservable().subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<double[]>() {
-                        @Override
-                        public void onSubscribe(@NonNull Disposable d) {
+        audioRecorderRxWrapper.getRecorderObservable().subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<double[]>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
 
-                        }
+                    }
 
-                        @Override
-                        public void onNext(@NonNull double[] doubles) {
-                            Log.d("Fragment", "Leci nastepny sample");
-                        }
+                    @Override
+                    public void onNext(@NonNull double[] doubles) {
+                        Log.d("Fragment", "Leci nastepny sample");
+                    }
 
-                        @Override
-                        public void onError(@NonNull Throwable e) {
+                    @Override
+                    public void onError(@NonNull Throwable e) {
 
-                        }
+                    }
 
-                        @Override
-                        public void onComplete() {
-                            Toast.makeText(getContext(), "Koniec nagrywania", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    @Override
+                    public void onComplete() {
+                        Toast.makeText(getContext(), "Koniec nagrywania", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override

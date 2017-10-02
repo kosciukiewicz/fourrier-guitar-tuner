@@ -1,6 +1,6 @@
 package com.example.witold.wicioguitartuner.AmplitudeChartFragment;
 
-import com.example.witold.wicioguitartuner.AudioProvider.AudioAnalysis.Complex;
+import com.example.witold.wicioguitartuner.AudioUtils.AudioAnalysis.Complex;
 import com.example.witold.wicioguitartuner.BaseInterfaces.BasePresenter;
 import com.example.witold.wicioguitartuner.BaseInterfaces.BaseView;
 

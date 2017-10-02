@@ -9,10 +9,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.AudioRecorderRxWrapper;
+import com.example.witold.wicioguitartuner.Utils.RxBus.RxBus;
+import com.example.witold.wicioguitartuner.Utils.RxBus.StartRecordingEvent;
 import com.example.witold.wicioguitartuner.Utils.SmartFragmentStatePagerAdapter;
-import com.example.witold.wicioguitartuner.AudioProvider.AudioRecorder;
+import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.AudioRecorder;
 
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 
@@ -37,15 +39,10 @@ public class MainActivity extends DaggerAppCompatActivity {
     ImageView imageViewStatus;
 
     @Inject
-    AudioRecorder audioRecorder;
+    AudioRecorderRxWrapper audioRecorder;
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
-    }
-
-
+    @Inject
+    RxBus rxBus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +51,9 @@ public class MainActivity extends DaggerAppCompatActivity {
         pager = (ViewPager) findViewById(R.id.viewPager);
         adapter = new SmartFragmentStatePagerAdapter(getSupportFragmentManager());
         pager.setAdapter(adapter);
-        EventBus.getDefault().register(this);
         initializeComponents();
         initializeNavBar();
+        initializeAudioRecorderAndSubscribeObservable();
         Log.d("Main", audioRecorder + "");
     }
 
@@ -97,7 +94,8 @@ public class MainActivity extends DaggerAppCompatActivity {
         buttonStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                initializeAudioRecorderAndSubcribeObservable();
+                initializeAudioRecorderAndSubscribeObservable();
+                rxBus.setEvent(new StartRecordingEvent());
             }
         });
         buttonFinish.setOnClickListener(new View.OnClickListener() {
@@ -109,11 +107,10 @@ public class MainActivity extends DaggerAppCompatActivity {
         imageViewStatus = (ImageView) findViewById(R.id.imageViewStatus);
     }
 
-    private void initializeAudioRecorderAndSubcribeObservable()   //Initialize audioRecorder
+    private void initializeAudioRecorderAndSubscribeObservable()   //Initialize audioRecorder
     {
-        if(audioRecorder==null) {
-            audioRecorder = AudioRecorder.getInstance(this);
-            audioRecorder.getRecordObservable().subscribeOn(Schedulers.io())
+        audioRecorder.getRecorderObservable()
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<double[]>() {
                     @Override
@@ -136,15 +133,12 @@ public class MainActivity extends DaggerAppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Koniec nagrywania", Toast.LENGTH_SHORT).show();
                     }
                 });
-        }
+
     }
 
     private void stopAndResetRecorder()
     {
-        if(audioRecorder!=null) {
-            audioRecorder.StopRecording();
-            audioRecorder = null;
-        }
+        audioRecorder.stopRecording();
     }
 
     public void setRecording(boolean visibility)

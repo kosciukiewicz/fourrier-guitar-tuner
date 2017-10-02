@@ -1,4 +1,6 @@
-package com.example.witold.wicioguitartuner.AudioProvider;
+package com.example.witold.wicioguitartuner.AudioUtils;
+
+import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.DefaultParameters;
 
 /**
  * Created by Witold on 2016-12-04.
