@@ -63,4 +63,30 @@ public class AudioAnalysis {
         }
         return result;
     }
+
+    public static Complex[] getComplexResult(double[] sample, int size){
+        Complex[] complexResult = new Complex[size];
+        for(int i= 0; i < size; i++)
+        {
+            complexResult[i] = new Complex(sample[i], 0.0);
+        }
+        return complexResult;
+    }
+
+    public static int getMax(Complex[] data)
+    {
+        int bucket = 0;
+        double max = Math.abs(data[0].re);
+        int size = data.length;
+
+        for(int i = 0; i < size/4; i++ )
+        {
+            if (max < Math.abs(data[i].re))
+            {
+                max = Math.abs(data[i].re);
+                bucket = i;
+            }
+        }
+        return bucket;
+    }
 }

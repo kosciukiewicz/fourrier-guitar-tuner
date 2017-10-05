@@ -9,11 +9,19 @@ import com.example.witold.wicioguitartuner.BaseInterfaces.BaseView;
  */
 
 public class TunerContract {
-    interface TunerView extends BaseView{
-         void setNoteTextView(SingleFrequency frequency);
+    interface TunerView extends BaseView {
+        void setNoteTextView(SingleFrequency frequency);
+
+        void setArrowsTooHigh();
+
+        void setArrowsTooLow();
+
+        void setArrowsEqual();
     }
 
-    interface Presenter extends BasePresenter<TunerView>{
+    interface Presenter extends BasePresenter<TunerView> {
+        void subscribeAudioRecorder();
 
+        void subscribeRecordingEventBus();
     }
 }

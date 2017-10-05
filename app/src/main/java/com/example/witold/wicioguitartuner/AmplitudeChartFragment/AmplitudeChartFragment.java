@@ -2,6 +2,7 @@ package com.example.witold.wicioguitartuner.AmplitudeChartFragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +22,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import dagger.android.support.AndroidSupportInjection;
 import dagger.android.support.DaggerFragment;
 
 public class AmplitudeChartFragment extends DaggerFragment implements AmplitudeChartFragmentContract.AmplitudeChartView {
-    static LineChart chart;
+    @BindView(R.id.amplitudeChart)
+    LineChart chart;
 
     @Inject
     AmplitudeChartPresenter amplitudeChartPresenter;
@@ -41,24 +45,12 @@ public class AmplitudeChartFragment extends DaggerFragment implements AmplitudeC
         initializePresenter();
     }
 
-    private void initializePresenter() {
-        this.amplitudeChartPresenter.onViewAttached(this);
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_chart, container, false);
-        chart = (LineChart) view.findViewById(R.id.chart);
+        View view = inflater.inflate(R.layout.fragment_amplitude_chart, container, false);
+        ButterKnife.bind(this, view);
         return view;
-    }
-
-    public static AmplitudeChartFragment newInstance(String text) {
-        AmplitudeChartFragment f = new AmplitudeChartFragment();
-        Bundle b = new Bundle();
-        b.putString("msg", text);
-        f.setArguments(b);
-        return f;
     }
 
     @Override
@@ -69,54 +61,44 @@ public class AmplitudeChartFragment extends DaggerFragment implements AmplitudeC
 
     @Override
     public void showDataOnChart(Complex[] data, int maxChartValue) {
-        if (chart != null) {
-            List<Entry> entries = new ArrayList<>();
-            for (int i = 0; i < maxChartValue; i++) {
-                entries.add(new Entry(((float) DefaultParameters.RECORDER_SAMPLERATE / DefaultParameters.SAMPLE_SIZE) * i, (float) (data[i].re)));
-            }
+        initializeChart();
 
-            LineDataSet dataSet = new LineDataSet(entries, "Amplitude"); // add entries to dataset
-            dataSet.setColor(getResources().getColor(R.color.colorAccent));
-            dataSet.setValueTextColor(getResources().getColor(R.color.colorPrimaryDark));
-            dataSet.setDrawCircles(false);
-            LineData lineData = new LineData(dataSet);
-            YAxis leftAxis = chart.getAxisLeft();
-            YAxis rightAxis = chart.getAxisRight();
-            XAxis axis = chart.getXAxis();
-            axis.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
-            rightAxis.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
-            leftAxis.setDrawLabels(false);
-            chart.getLegend().setEnabled(false);
-            chart.getDescription().setEnabled(false);
-            chart.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
-            chart.setData(lineData);
-            chart.invalidate();
+        List<Entry> entries = new ArrayList<>();
+        for (int i = 0; i < maxChartValue; i++) {
+            entries.add(new Entry(((float) DefaultParameters.RECORDER_SAMPLERATE / DefaultParameters.SAMPLE_SIZE) * i, (float) (data[i].re)));
         }
+
+        LineDataSet dataSet = new LineDataSet(entries, "Amplitude"); // add entries to dataset
+        dataSet.setColor(getResources().getColor(R.color.colorAccent));
+        dataSet.setValueTextColor(getResources().getColor(R.color.colorPrimaryDark));
+        dataSet.setDrawCircles(false);
+        LineData lineData = new LineData(dataSet);
+        chart.setData(lineData);
+        chart.invalidate();
     }
 
-    public void initializeChart(Complex[] dataObjects, int maxChartValue) {
-        if (chart != null) {
-            List<Entry> entries = new ArrayList<>();
-            for (int i = 0; i < maxChartValue; i++) {
-                entries.add(new Entry(((float) DefaultParameters.RECORDER_SAMPLERATE / DefaultParameters.SAMPLE_SIZE) * i, (float) (dataObjects[i].re)));
-            }
+    private void initializePresenter() {
+        amplitudeChartPresenter.onViewAttached(this);
+        amplitudeChartPresenter.subscribeRecordingEventBus();
+    }
 
-            LineDataSet dataSet = new LineDataSet(entries, "Amplitude"); // add entries to dataset
-            dataSet.setColor(getResources().getColor(R.color.colorAccent));
-            dataSet.setValueTextColor(getResources().getColor(R.color.colorPrimaryDark));
-            dataSet.setDrawCircles(false);
-            LineData lineData = new LineData(dataSet);
-            YAxis leftAxis = chart.getAxisLeft();
-            YAxis rightAxis = chart.getAxisRight();
-            XAxis axis = chart.getXAxis();
-            axis.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
-            rightAxis.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
-            leftAxis.setDrawLabels(false);
-            chart.getLegend().setEnabled(false);
-            chart.getDescription().setEnabled(false);
-            chart.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
-            chart.setData(lineData);
-            chart.invalidate();
-        }
+    private void initializeChart() {
+        YAxis leftAxis = chart.getAxisLeft();
+        YAxis rightAxis = chart.getAxisRight();
+        XAxis axis = chart.getXAxis();
+        axis.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+        rightAxis.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+        leftAxis.setDrawLabels(false);
+        chart.getLegend().setEnabled(false);
+        chart.getDescription().setEnabled(false);
+        chart.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
+    }
+
+    public static AmplitudeChartFragment newInstance(String text) {
+        AmplitudeChartFragment f = new AmplitudeChartFragment();
+        Bundle b = new Bundle();
+        b.putString("msg", text);
+        f.setArguments(b);
+        return f;
     }
 }

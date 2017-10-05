@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.witold.wicioguitartuner.AmplitudeChartFragment.AmplitudeChartFragment;
 import com.example.witold.wicioguitartuner.AudioUtils.AudioAnalysis.Complex;
 import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.AudioRecorder;
 import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.AudioRecorderRxWrapper;
@@ -27,6 +28,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import dagger.android.support.DaggerFragment;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -37,16 +40,11 @@ import io.reactivex.schedulers.Schedulers;
 
 
 public class FFTChartFragment extends DaggerFragment implements FFTChartContract.FFTChartView {
-    static LineChart chart;
-
-    @Inject
-    AudioRecorderRxWrapper audioRecorderRxWrapper;
+    @BindView(R.id.chartFFT)
+    LineChart chart;
 
     @Inject
     FFTChartPresenter fftChartPresenter;
-
-    @Inject
-    RxBus rxBus;
 
     @Inject
     public FFTChartFragment() {
@@ -67,56 +65,17 @@ public class FFTChartFragment extends DaggerFragment implements FFTChartContract
         initializePresenter();
     }
 
-    private void initializePresenter() {
-        fftChartPresenter.onViewAttached(this);
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_fftchart, container, false);
-        chart = (LineChart) view.findViewById(R.id.chartFFT);
+        ButterKnife.bind(this, view);
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initializeAudioRecorderAndSubcribeObservable();
-        rxBus.getEventObservable().subscribe(new Consumer<StartRecordingEvent>() {
-            @Override
-            public void accept(StartRecordingEvent startRecordingEvent) throws Exception {
-                initializeAudioRecorderAndSubcribeObservable();
-            }
-        });
-        Log.d("Fragment", audioRecorderRxWrapper + "");
-    }
-
-    private void initializeAudioRecorderAndSubcribeObservable()   //Initialize audioRecorder
-    {
-        audioRecorderRxWrapper.getRecorderObservable().subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<double[]>() {
-                    @Override
-                    public void onSubscribe(@NonNull Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(@NonNull double[] doubles) {
-                        Log.d("Fragment", "Leci nastepny sample");
-                    }
-
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Toast.makeText(getContext(), "Koniec nagrywania", Toast.LENGTH_SHORT).show();
-                    }
-                });
     }
 
     @Override
@@ -132,41 +91,28 @@ public class FFTChartFragment extends DaggerFragment implements FFTChartContract
 
     @Override
     public void showDataOnChart(Complex[] data, int maxChartValue) {
+        initializeChart();
+
         List<Entry> entries = new ArrayList<>();
         for (int i = 0; i < maxChartValue; i++) {
             entries.add(new Entry(((float) DefaultParameters.RECORDER_SAMPLERATE / DefaultParameters.SAMPLE_SIZE) * i, (float) Math.abs(data[i].re)));
         }
 
-        LineDataSet dataSet = new LineDataSet(entries, "Frequency"); // add entries to dataset
+        LineDataSet dataSet = new LineDataSet(entries, "Amplitude"); // add entries to dataset
         dataSet.setColor(getResources().getColor(R.color.colorAccent));
         dataSet.setValueTextColor(getResources().getColor(R.color.colorPrimaryDark));
         dataSet.setDrawCircles(false);
         LineData lineData = new LineData(dataSet);
-        YAxis leftAxis = chart.getAxisLeft();
-        YAxis rightAxis = chart.getAxisRight();
-        XAxis axis = chart.getXAxis();
-        axis.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
-        rightAxis.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
-        leftAxis.setDrawLabels(false);
-        chart.getLegend().setEnabled(false);
-        chart.getDescription().setEnabled(false);
-        chart.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
         chart.setData(lineData);
         chart.invalidate();
     }
 
-    public void initializeChart(Complex[] dataObjects, int maxChartValue) {
+    private void initializePresenter() {
+        fftChartPresenter.onViewAttached(this);
+        fftChartPresenter.subscribeRecordingEventBus();
+    }
 
-        List<Entry> entries = new ArrayList<>();
-        for (int i = 0; i < maxChartValue; i++) {
-            entries.add(new Entry(((float) DefaultParameters.RECORDER_SAMPLERATE / DefaultParameters.SAMPLE_SIZE) * i, (float) Math.abs(dataObjects[i].re)));
-        }
-
-        LineDataSet dataSet = new LineDataSet(entries, "Frequency"); // add entries to dataset
-        dataSet.setColor(getResources().getColor(R.color.colorAccent));
-        dataSet.setValueTextColor(getResources().getColor(R.color.colorPrimaryDark));
-        dataSet.setDrawCircles(false);
-        LineData lineData = new LineData(dataSet);
+    private void initializeChart() {
         YAxis leftAxis = chart.getAxisLeft();
         YAxis rightAxis = chart.getAxisRight();
         XAxis axis = chart.getXAxis();
@@ -176,7 +122,5 @@ public class FFTChartFragment extends DaggerFragment implements FFTChartContract
         chart.getLegend().setEnabled(false);
         chart.getDescription().setEnabled(false);
         chart.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
-        chart.setData(lineData);
-        chart.invalidate();
     }
 }

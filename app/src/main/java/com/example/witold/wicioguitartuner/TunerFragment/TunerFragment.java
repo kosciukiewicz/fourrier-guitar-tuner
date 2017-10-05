@@ -16,16 +16,23 @@ import com.github.pavlospt.roundedletterview.RoundedLetterView;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import dagger.android.support.AndroidSupportInjection;
 import dagger.android.support.DaggerFragment;
 
 
-public class TunerFragment extends DaggerFragment implements TunerContract.TunerView{
+public class TunerFragment extends DaggerFragment implements TunerContract.TunerView {
+
+    @BindView(R.id.noteView)
     RoundedLetterView noteView;
+    @BindView(R.id.textViewClosestFreqValue)
     TextView freqValue;
+    @BindView(R.id.imageViewArrowUp)
     ImageView arrowUp;
+    @BindView(R.id.imageViewArrowDown)
     ImageView arrowDown;
-    FrequencySet frequencySet;
+
     @Inject
     TunerPresenter tunerPresenter;
 
@@ -42,13 +49,14 @@ public class TunerFragment extends DaggerFragment implements TunerContract.Tuner
 
     private void initlalizePresenter() {
         tunerPresenter.onViewAttached(this);
+        tunerPresenter.subscribeAudioRecorder();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_tuner, container, false);
-        initializeComponents(view);
+        ButterKnife.bind(this, view);
         return view;
     }
 
@@ -58,29 +66,20 @@ public class TunerFragment extends DaggerFragment implements TunerContract.Tuner
         AndroidSupportInjection.inject(this);
     }
 
-    private void initializeComponents(View view)
-    {
-        noteView = (RoundedLetterView) view.findViewById(R.id.noteView);
-        freqValue = (TextView) view.findViewById(R.id.textViewClosestFreqValue) ;
-        arrowUp = (ImageView) view.findViewById(R.id.imageViewArrowUp);
-        arrowDown = (ImageView) view.findViewById(R.id.imageViewArrowDown);
-        frequencySet = new FrequencySet();
-    }
-
-    public void setArrowsTooHigh()
-    {
+    @Override
+    public void setArrowsTooHigh() {
         arrowUp.setVisibility(View.INVISIBLE);
         arrowDown.setVisibility(View.VISIBLE);
     }
 
-    public void setArrowsTooLow()
-    {
+    @Override
+    public void setArrowsTooLow() {
         arrowUp.setVisibility(View.VISIBLE);
         arrowDown.setVisibility(View.INVISIBLE);
     }
 
-    public void setArrowsEqual()
-    {
+    @Override
+    public void setArrowsEqual() {
         arrowUp.setVisibility(View.INVISIBLE);
         arrowDown.setVisibility(View.INVISIBLE);
     }
@@ -90,17 +89,17 @@ public class TunerFragment extends DaggerFragment implements TunerContract.Tuner
         super.onViewCreated(view, savedInstanceState);
     }
 
+    @Override
+    public void setNoteTextView(SingleFrequency frequency) {
+        noteView.setTitleText(frequency.getNote());
+        freqValue.setText("( " + String.valueOf(frequency.getFreqValue()) + "Hz )");
+    }
+
     public static TunerFragment newInstance(String text) {
         TunerFragment f = new TunerFragment();
         Bundle b = new Bundle();
         b.putString("msg", text);
         f.setArguments(b);
         return f;
-    }
-
-    public void setNoteTextView(SingleFrequency frequency)
-    {
-        noteView.setTitleText(frequency.getNote());
-        freqValue.setText("( "+String.valueOf(frequency.getFreqValue()) + "Hz )");
     }
 }

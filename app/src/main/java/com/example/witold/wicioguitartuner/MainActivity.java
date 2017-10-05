@@ -53,7 +53,6 @@ public class MainActivity extends DaggerAppCompatActivity {
         pager.setAdapter(adapter);
         initializeComponents();
         initializeNavBar();
-        initializeAudioRecorderAndSubscribeObservable();
         Log.d("Main", audioRecorder + "");
     }
 
@@ -120,7 +119,7 @@ public class MainActivity extends DaggerAppCompatActivity {
 
                     @Override
                     public void onNext(@NonNull double[] doubles) {
-                        Log.d("Main", "Leci nastepny sample");
+                        Log.d("Main", "Leci nastepny sample jeden");
                     }
 
                     @Override
