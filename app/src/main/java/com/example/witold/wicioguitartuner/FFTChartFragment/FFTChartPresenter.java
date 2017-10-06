@@ -1,12 +1,8 @@
 package com.example.witold.wicioguitartuner.FFTChartFragment;
 
-import com.example.witold.wicioguitartuner.AmplitudeChartFragment.AmplitudeChartFragmentContract;
-import com.example.witold.wicioguitartuner.AudioUtils.AudioAnalysis.AudioAnalysis;
 import com.example.witold.wicioguitartuner.AudioUtils.AudioAnalysis.Complex;
-import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.AudioRecorder;
 import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.AudioRecorderRxWrapper;
 import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.DefaultParameters;
-import com.example.witold.wicioguitartuner.Utils.RxBus.RxBus;
 
 import javax.inject.Inject;
 
@@ -23,13 +19,11 @@ import timber.log.Timber;
 public class FFTChartPresenter implements FFTChartContract.Presenter {
     private FFTChartContract.FFTChartView fftChartView;
     private AudioRecorderRxWrapper audioRecorderRxWrapper;
-    private RxBus rxBus;
     private CompositeDisposable subscriptions;
 
     @Inject
-    public FFTChartPresenter(AudioRecorderRxWrapper audioRecorderRxWrapper, RxBus rxBus) {
+    public FFTChartPresenter(AudioRecorderRxWrapper audioRecorderRxWrapper) {
         this.audioRecorderRxWrapper = audioRecorderRxWrapper;
-        this.rxBus = rxBus;
         subscriptions = new CompositeDisposable();
     }
 
@@ -46,23 +40,15 @@ public class FFTChartPresenter implements FFTChartContract.Presenter {
 
     @Override
     public void subscribeAudioRecorder() {
-        Disposable subscription = audioRecorderRxWrapper.getRecorderObservable()
+        Disposable subscription = audioRecorderRxWrapper.getFFTSampleObservable()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(sample -> AudioAnalysis.getComplexResult(sample, sample.length))
-                .map(complexes -> AudioAnalysis.hanningWindow(complexes, complexes.length))
-                .map(complexes -> AudioAnalysis.fft(complexes))
                 .subscribe(
                         // onNext
                         this::processSamples,
                         // onError
                         throwable -> throwable.printStackTrace());
         subscriptions.add(subscription);
-    }
-
-    @Override
-    public void subscribeRecordingEventBus() {
-        rxBus.getEventObservable().subscribe(event -> subscribeAudioRecorder());
     }
 
     private void processSamples(Complex[] sample){

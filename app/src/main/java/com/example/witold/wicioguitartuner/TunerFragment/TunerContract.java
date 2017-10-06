@@ -21,7 +21,5 @@ public class TunerContract {
 
     interface Presenter extends BasePresenter<TunerView> {
         void subscribeAudioRecorder();
-
-        void subscribeRecordingEventBus();
     }
 }

@@ -49,7 +49,7 @@ public class TunerFragment extends DaggerFragment implements TunerContract.Tuner
 
     private void initlalizePresenter() {
         tunerPresenter.onViewAttached(this);
-        tunerPresenter.subscribeRecordingEventBus();
+        tunerPresenter.subscribeAudioRecorder();
     }
 
     @Override

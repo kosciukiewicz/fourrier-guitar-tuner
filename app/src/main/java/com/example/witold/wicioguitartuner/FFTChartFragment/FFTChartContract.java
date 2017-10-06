@@ -15,6 +15,5 @@ public class FFTChartContract {
 
     interface Presenter extends BasePresenter<FFTChartView>{
         void subscribeAudioRecorder();
-        void subscribeRecordingEventBus();
     }
 }

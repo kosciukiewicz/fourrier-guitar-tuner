@@ -1,4 +1,4 @@
-package com.example.witold.wicioguitartuner.Utils.SmartFragmentStatePagerAdapter;
+package com.example.witold.wicioguitartuner.MainActivity.SmartFragmentStatePagerAdapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,10 +9,7 @@ import android.view.ViewGroup;
 
 import com.example.witold.wicioguitartuner.AmplitudeChartFragment.AmplitudeChartFragment;
 import com.example.witold.wicioguitartuner.FFTChartFragment.FFTChartFragment;
-import com.example.witold.wicioguitartuner.TunerFragment.TunerContract;
 import com.example.witold.wicioguitartuner.TunerFragment.TunerFragment;
-
-import javax.inject.Inject;
 
 /**
  * Created by Witold on 28.09.2017.
@@ -39,7 +36,6 @@ public class SmartFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
         // Register the fragment when the item is instantiated
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            Log.d("asdasda", tunerFragment + "");
             Fragment fragment = (Fragment) super.instantiateItem(container, position);
             registeredFragments.put(position, fragment);
             return fragment;

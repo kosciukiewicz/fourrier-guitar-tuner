@@ -4,8 +4,7 @@ import com.example.witold.wicioguitartuner.AudioUtils.AudioAnalysis.AudioAnalysi
 import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.AudioRecorderRxWrapper;
 import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.DefaultParameters;
 import com.example.witold.wicioguitartuner.FFTChartFragment.FFTChartContract;
-import com.example.witold.wicioguitartuner.Utils.RxBus.RxBus;
-import com.example.witold.wicioguitartuner.Utils.RxBus.StartRecordingEvent;
+
 
 import javax.inject.Inject;
 
@@ -21,13 +20,11 @@ import io.reactivex.schedulers.Schedulers;
 public class MainActivityPresenter implements MainActivityContract.Presenter {
     private MainActivityContract.MainActivityView mainActivityView;
     private AudioRecorderRxWrapper audioRecorderRxWrapper;
-    private RxBus rxBus;
     private CompositeDisposable subscriptions;
 
     @Inject
-    public MainActivityPresenter(AudioRecorderRxWrapper audioRecorderRxWrapper, RxBus rxBus) {
+    public MainActivityPresenter(AudioRecorderRxWrapper audioRecorderRxWrapper) {
         this.audioRecorderRxWrapper = audioRecorderRxWrapper;
-        this.rxBus = rxBus;
         subscriptions = new CompositeDisposable();
     }
 
@@ -43,12 +40,9 @@ public class MainActivityPresenter implements MainActivityContract.Presenter {
 
     @Override
     public void subscribeAudioRecorder() {
-        Disposable subscription = audioRecorderRxWrapper.getRecorderObservable()
+        Disposable subscription = audioRecorderRxWrapper.getFFTSampleObservable()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(sample -> AudioAnalysis.getComplexResult(sample, sample.length))
-                .map(complexes -> AudioAnalysis.hanningWindow(complexes, complexes.length))
-                .map(AudioAnalysis::fft)
                 .map(AudioAnalysis::getMax)
                 .subscribe(
                         // onNext
@@ -61,7 +55,7 @@ public class MainActivityPresenter implements MainActivityContract.Presenter {
     @Override
     public void startAudioRecorder() {
         subscribeAudioRecorder();
-        sendStartAudioRecordingEvent();
+        audioRecorderRxWrapper.startRecording();
     }
 
     @Override
@@ -73,9 +67,5 @@ public class MainActivityPresenter implements MainActivityContract.Presenter {
         float freq = bucket*((float) DefaultParameters.RECORDER_SAMPLERATE)/ DefaultParameters.SAMPLE_SIZE;
         mainActivityView.setRecordedFrequencyTextView(freq);
 
-    }
-
-    private void sendStartAudioRecordingEvent(){
-        rxBus.setEvent(new StartRecordingEvent());
     }
 }

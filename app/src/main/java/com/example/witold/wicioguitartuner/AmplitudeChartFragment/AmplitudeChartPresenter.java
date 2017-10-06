@@ -5,7 +5,6 @@ package com.example.witold.wicioguitartuner.AmplitudeChartFragment;
 import com.example.witold.wicioguitartuner.AudioUtils.AudioAnalysis.AudioAnalysis;
 import com.example.witold.wicioguitartuner.AudioUtils.AudioAnalysis.Complex;
 import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.AudioRecorderRxWrapper;
-import com.example.witold.wicioguitartuner.Utils.RxBus.RxBus;
 
 import javax.inject.Inject;
 
@@ -22,13 +21,11 @@ import timber.log.Timber;
 public class AmplitudeChartPresenter implements AmplitudeChartFragmentContract.Presenter {
     private AmplitudeChartFragmentContract.AmplitudeChartView amplitudeChartView;
     private AudioRecorderRxWrapper audioRecorderRxWrapper;
-    private RxBus rxBus;
     private CompositeDisposable subscriptions;
 
     @Inject
-    public AmplitudeChartPresenter(AudioRecorderRxWrapper audioRecorderRxWrapper, RxBus rxBus) {
+    public AmplitudeChartPresenter(AudioRecorderRxWrapper audioRecorderRxWrapper) {
         this.audioRecorderRxWrapper = audioRecorderRxWrapper;
-        this.rxBus = rxBus;
         subscriptions = new CompositeDisposable();
     }
 
@@ -45,21 +42,15 @@ public class AmplitudeChartPresenter implements AmplitudeChartFragmentContract.P
 
     @Override
     public void subscribeAudioRecorder() {
-        Disposable subscription = audioRecorderRxWrapper.getRecorderObservable()
+        Disposable subscription = audioRecorderRxWrapper.getAmplitudeSampleObservable()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(sample -> AudioAnalysis.getComplexResult(sample, sample.length))
                 .subscribe(
                         // onNext
                         this::processSamples,
                         // onError
                         throwable -> throwable.printStackTrace());
         subscriptions.add(subscription);
-    }
-
-    @Override
-    public void subscribeRecordingEventBus() {
-        rxBus.getEventObservable().subscribe(event -> subscribeAudioRecorder());
     }
 
     private void processSamples(Complex[] sample){

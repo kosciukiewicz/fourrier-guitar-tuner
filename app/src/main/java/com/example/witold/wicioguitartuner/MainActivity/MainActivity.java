@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.witold.wicioguitartuner.R;
-import com.example.witold.wicioguitartuner.Utils.SmartFragmentStatePagerAdapter.SmartFragmentStatePagerAdapter;
+import com.example.witold.wicioguitartuner.MainActivity.SmartFragmentStatePagerAdapter.SmartFragmentStatePagerAdapter;
 
 
 import java.util.ArrayList;

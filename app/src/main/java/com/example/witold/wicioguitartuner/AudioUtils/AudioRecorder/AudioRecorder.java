@@ -11,31 +11,41 @@ import com.example.witold.wicioguitartuner.AudioUtils.AudioAnalysis.Complex;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
 
 /**
  * Sound recording provider.
  */
 public class AudioRecorder {
 
-    private static AudioRecorder audioRecorderInstance;
     private int sampleSize;
     private int bufferSize;
     private int minimalLoudness;
     private boolean isRecording = false;
-    private AudioRecorderCallback audioRecorderCallback;
+    private PublishSubject<Complex[]> sampleSubject;
 
     public AudioRecorder(int sampleSize, int bufferSize, int minimalLoudness) {
         this.sampleSize = sampleSize;
         this.bufferSize = bufferSize;
         this.minimalLoudness = minimalLoudness;
+        initializeSampleSubject();
     }
 
+    private void initializeSampleSubject(){
+        sampleSubject = PublishSubject.create();
+    }
 
-    public Observable<double[]> startRecording() {
-        return Observable.create(new ObservableOnSubscribe<double[]>() {
+    public Observable<Complex[]> getSampleObservable(){
+        return sampleSubject;
+    }
+
+    public Observable<Complex[]> getRecordingObservable() {
+        return Observable.create(new ObservableOnSubscribe<Complex[]>() {
             @Override
-            public void subscribe(@NonNull ObservableEmitter<double[]> e) throws Exception {
+            public void subscribe(@NonNull ObservableEmitter<Complex[]> e) throws Exception {
                 isRecording = true;
                 try {
                     final double[] sample = new double[sampleSize];
@@ -71,7 +81,7 @@ public class AudioRecorder {
                         }
                         if (sampleIndex >= sampleSize) {
                             sampleIndex = 0;
-                            e.onNext(sample);
+                            sampleSubject.onNext(AudioAnalysis.getComplexResult(sample, sampleSize));
                         }
                     }
                     audioRecord.stop();
@@ -84,42 +94,16 @@ public class AudioRecorder {
         });
     }
 
+    public void startRecording(){
+        getRecordingObservable()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(complexes -> {
+            sampleSubject.onNext(complexes);
+        });
+    }
+
     public void stopRecording() {
         isRecording = false;
     }
-
-
-    public void wrapRecorder(AudioRecorderCallback recordingCallback) {
-        this.audioRecorderCallback = recordingCallback;
-    }
-
-    protected void calculate(final double[] data, int size) //po udanym nagraniu próbki liczy AudioAnalysis
-    {
-        final Complex[] complexResult = new Complex[size]; //najpierw zamiana na wartości zespolone
-        for (int i = 0; i < size; i++) {
-            complexResult[i] = new Complex(data[i], 0.0);
-        }
-        final Complex[] complexResultFromFFT = AudioAnalysis.fft(AudioAnalysis.hanningWindow(complexResult, complexResult.length));
-    }
-
-    protected int getMax(Complex[] data) //zwraca kubełek a nie częstotliwość
-    {
-        int index = 0;
-        double max = Math.abs(data[0].re);
-        int size = data.length;
-        for (int i = 0; i < size / 4; i++) {
-            if (max < Math.abs(data[i].re)) {
-                max = Math.abs(data[i].re);
-                index = i;
-            }
-        }
-        return index;
-    }
-
-    protected void onProgressUpdate(Integer... progress) {
-    }
-
-    protected void onPostExecute(Void result) {
-    }
-
 }

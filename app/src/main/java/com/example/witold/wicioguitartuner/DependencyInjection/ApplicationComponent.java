@@ -17,7 +17,6 @@ import dagger.android.support.AndroidSupportInjectionModule;
 @ApplicationScope
 @Component(modules = {
         AudioRecorderModule.class,
-        RxBusModule.class,
         AppModule.class,
         ActivityBindingModule.class,
         AndroidSupportInjectionModule.class})

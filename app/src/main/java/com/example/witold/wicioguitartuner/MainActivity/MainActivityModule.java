@@ -1,12 +1,10 @@
 package com.example.witold.wicioguitartuner.MainActivity;
 
 import com.example.witold.wicioguitartuner.DependencyInjection.Scopes.ActivityScoped;
-import com.example.witold.wicioguitartuner.Utils.SmartFragmentStatePagerAdapter.SmartFragmentAdapterModule;
-import com.example.witold.wicioguitartuner.Utils.SmartFragmentStatePagerAdapter.SmartFragmentStatePagerAdapter;
+import com.example.witold.wicioguitartuner.MainActivity.SmartFragmentStatePagerAdapter.SmartFragmentAdapterModule;
 
 import dagger.Binds;
 import dagger.Module;
-import dagger.Provides;
 
 /**
  * Created by Witold on 05.10.2017.

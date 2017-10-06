@@ -1,4 +1,4 @@
-package com.example.witold.wicioguitartuner.Utils.SmartFragmentStatePagerAdapter;
+package com.example.witold.wicioguitartuner.MainActivity.SmartFragmentStatePagerAdapter;
 
 import com.example.witold.wicioguitartuner.AmplitudeChartFragment.AmplitudeChartFragment;
 import com.example.witold.wicioguitartuner.FFTChartFragment.FFTChartFragment;

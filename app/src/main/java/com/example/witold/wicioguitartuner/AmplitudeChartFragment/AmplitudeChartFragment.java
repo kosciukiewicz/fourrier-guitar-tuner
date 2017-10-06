@@ -79,7 +79,7 @@ public class AmplitudeChartFragment extends DaggerFragment implements AmplitudeC
 
     private void initializePresenter() {
         amplitudeChartPresenter.onViewAttached(this);
-        amplitudeChartPresenter.subscribeRecordingEventBus();
+        amplitudeChartPresenter.subscribeAudioRecorder();
     }
 
     private void initializeChart() {

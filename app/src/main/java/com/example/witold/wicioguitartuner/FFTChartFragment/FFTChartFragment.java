@@ -2,20 +2,13 @@ package com.example.witold.wicioguitartuner.FFTChartFragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.example.witold.wicioguitartuner.AmplitudeChartFragment.AmplitudeChartFragment;
 import com.example.witold.wicioguitartuner.AudioUtils.AudioAnalysis.Complex;
-import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.AudioRecorder;
-import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.AudioRecorderRxWrapper;
 import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.DefaultParameters;
 import com.example.witold.wicioguitartuner.R;
-import com.example.witold.wicioguitartuner.Utils.RxBus.RxBus;
-import com.example.witold.wicioguitartuner.Utils.RxBus.StartRecordingEvent;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -31,12 +24,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import dagger.android.support.DaggerFragment;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 
 
 public class FFTChartFragment extends DaggerFragment implements FFTChartContract.FFTChartView {
@@ -109,7 +96,7 @@ public class FFTChartFragment extends DaggerFragment implements FFTChartContract
 
     private void initializePresenter() {
         fftChartPresenter.onViewAttached(this);
-        fftChartPresenter.subscribeRecordingEventBus();
+        fftChartPresenter.subscribeAudioRecorder();
     }
 
     private void initializeChart() {

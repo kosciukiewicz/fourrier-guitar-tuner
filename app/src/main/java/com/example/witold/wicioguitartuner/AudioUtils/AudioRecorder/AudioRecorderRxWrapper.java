@@ -2,10 +2,14 @@ package com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder;
 
 import android.util.Log;
 
+import com.example.witold.wicioguitartuner.AudioUtils.AudioAnalysis.AudioAnalysis;
+import com.example.witold.wicioguitartuner.AudioUtils.AudioAnalysis.Complex;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.subjects.PublishSubject;
 import timber.log.Timber;
 
 /**
@@ -15,39 +19,38 @@ import timber.log.Timber;
 public class AudioRecorderRxWrapper {
     Observable<double[]> recorderObservable;
     AudioRecorder audioRecorder;
+    private PublishSubject<Complex[]> fftSampleSubject;
 
     public AudioRecorderRxWrapper(AudioRecorder audioRecorder) {
         this.audioRecorder = audioRecorder;
+        initializeFFTSampleSubject();
         Log.d("AudioRecorderRXWrapper", "initialized");
     }
 
-    private Observable<double[]> initializeAndGetObservable() {
-        return Observable.create(new ObservableOnSubscribe<double[]>() {
-            @Override
-            public void subscribe(@NonNull final ObservableEmitter<double[]> emitter) throws Exception {
-                audioRecorder.wrapRecorder(new AudioRecorderCallback() {
-                    @Override
-                    public void onRecord(double[] sample) {
-                        Log.e("sdfsdfsdf", "sdfsdfsdfsfd");
-                        emitter.onNext(sample);
-                    }
-
-                    @Override
-                    public void onFinish() {
-                        emitter.onComplete();
-                    }
-
-                    @Override
-                    public void onStop() {
-
-                    }
-                });
-            }
-        });
+    private void initializeFFTSampleSubject() {
+        fftSampleSubject = PublishSubject.create();
+        subscribeAmplitudeSampleObservable();
     }
 
-    public Observable<double[]> getRecorderObservable() {
-        return audioRecorder.startRecording();
+    private void subscribeAmplitudeSampleObservable() {
+        getAmplitudeSampleObservable()
+                .map(complexes -> AudioAnalysis.hanningWindow(complexes, complexes.length))
+                .map(complexes -> AudioAnalysis.fft(complexes))
+                .subscribe(fftSample ->
+                        fftSampleSubject.onNext(fftSample)
+                );
+    }
+
+    public Observable<Complex[]> getAmplitudeSampleObservable() {
+        return audioRecorder.getSampleObservable();
+    }
+
+    public Observable<Complex[]> getFFTSampleObservable() {
+        return fftSampleSubject;
+    }
+
+    public void startRecording() {
+        audioRecorder.startRecording();
     }
 
     public void stopRecording() {

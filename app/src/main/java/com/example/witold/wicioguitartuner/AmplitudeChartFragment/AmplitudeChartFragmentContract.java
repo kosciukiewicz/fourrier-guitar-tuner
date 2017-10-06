@@ -15,6 +15,5 @@ public class AmplitudeChartFragmentContract {
 
     interface Presenter extends BasePresenter<AmplitudeChartView>{
         void subscribeAudioRecorder();
-        void subscribeRecordingEventBus();
     }
 }
