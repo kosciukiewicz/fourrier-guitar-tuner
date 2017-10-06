@@ -3,7 +3,8 @@ package com.example.witold.wicioguitartuner.DependencyInjection;
 import com.example.witold.wicioguitartuner.AmplitudeChartFragment.AmplitudeChartFragmentModule;
 import com.example.witold.wicioguitartuner.DependencyInjection.Scopes.ActivityScoped;
 import com.example.witold.wicioguitartuner.FFTChartFragment.FFTChartFragmentModule;
-import com.example.witold.wicioguitartuner.MainActivity;
+import com.example.witold.wicioguitartuner.MainActivity.MainActivity;
+import com.example.witold.wicioguitartuner.MainActivity.MainActivityModule;
 import com.example.witold.wicioguitartuner.TunerFragment.TunerFragmentModule;
 
 import dagger.Module;
@@ -16,7 +17,10 @@ import dagger.android.ContributesAndroidInjector;
 public abstract class ActivityBindingModule {
 
     @ActivityScoped
-    @ContributesAndroidInjector(modules = {FFTChartFragmentModule.class, AmplitudeChartFragmentModule.class, TunerFragmentModule.class})
+    @ContributesAndroidInjector(modules = {FFTChartFragmentModule.class,
+            AmplitudeChartFragmentModule.class,
+            TunerFragmentModule.class,
+            MainActivityModule.class})
     abstract MainActivity mainActivity();
 
 }

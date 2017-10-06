@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.example.witold.wicioguitartuner.MainActivity">
+    tools:context="com.example.witold.wicioguitartuner.MainActivity.MainActivity">
 
 
     <LinearLayout
@@ -70,7 +70,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:fontFamily="sans-serif-condensed"
                 android:text="Hz"
-                android:id="@+id/textViewCurrentFreq"
+                android:id="@+id/textViewRecordedFrequency"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@+id/imageViewStatus"
                 android:layout_toRightOf="@+id/buttonFinishRecording"
