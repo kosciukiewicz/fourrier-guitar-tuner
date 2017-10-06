@@ -1,14 +1,18 @@
-package com.example.witold.wicioguitartuner.Utils;
+package com.example.witold.wicioguitartuner.Utils.SmartFragmentStatePagerAdapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 
 import com.example.witold.wicioguitartuner.AmplitudeChartFragment.AmplitudeChartFragment;
 import com.example.witold.wicioguitartuner.FFTChartFragment.FFTChartFragment;
+import com.example.witold.wicioguitartuner.TunerFragment.TunerContract;
 import com.example.witold.wicioguitartuner.TunerFragment.TunerFragment;
+
+import javax.inject.Inject;
 
 /**
  * Created by Witold on 28.09.2017.
@@ -16,15 +20,26 @@ import com.example.witold.wicioguitartuner.TunerFragment.TunerFragment;
 
 public class SmartFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
         private int NUM_ITEMS = 3;
+
+        TunerFragment tunerFragment;
+
+        FFTChartFragment fftChartFragment;
+
+        AmplitudeChartFragment amplitudeChartFragment;
+
         private SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();
 
-        public SmartFragmentStatePagerAdapter(FragmentManager fragmentManager) {
+        public SmartFragmentStatePagerAdapter(FragmentManager fragmentManager, TunerFragment tunerFragment, AmplitudeChartFragment amplitudeChartFragment, FFTChartFragment fftChartFragment){
             super(fragmentManager);
+            this.tunerFragment = tunerFragment;
+            this.fftChartFragment = fftChartFragment;
+            this.amplitudeChartFragment = amplitudeChartFragment;
         }
 
         // Register the fragment when the item is instantiated
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
+            Log.d("asdasda", tunerFragment + "");
             Fragment fragment = (Fragment) super.instantiateItem(container, position);
             registeredFragments.put(position, fragment);
             return fragment;
@@ -43,9 +58,9 @@ public class SmartFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
         @Override
         public Fragment getItem(int pos) {
             switch(pos) {
-                case 0: return TunerFragment.newInstance("FirstFragment, Instance 1");
-                case 1: return FFTChartFragment.newInstance("ThirdFragment, Instance 1");
-                case 2: return AmplitudeChartFragment.newInstance("SecondFragment, Instance 1");
+                case 0: return tunerFragment;
+                case 1: return fftChartFragment;
+                case 2: return amplitudeChartFragment;
                 default: return null;
             }
         }

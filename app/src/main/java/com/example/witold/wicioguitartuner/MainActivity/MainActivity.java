@@ -2,20 +2,16 @@ package com.example.witold.wicioguitartuner.MainActivity;
 
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.AudioRecorderRxWrapper;
 import com.example.witold.wicioguitartuner.R;
-import com.example.witold.wicioguitartuner.Utils.RxBus.RxBus;
-import com.example.witold.wicioguitartuner.Utils.SmartFragmentStatePagerAdapter;
+import com.example.witold.wicioguitartuner.Utils.SmartFragmentStatePagerAdapter.SmartFragmentStatePagerAdapter;
 
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -27,7 +23,6 @@ import devlight.io.library.ntb.NavigationTabBar;
 
 public class MainActivity extends DaggerAppCompatActivity implements MainActivityContract.MainActivityView {
 
-    SmartFragmentStatePagerAdapter adapter;
     @BindView(R.id.ntb_horizontal)
     NavigationTabBar navigationTabBar;
     @BindView(R.id.buttonStartRecording)
@@ -43,6 +38,9 @@ public class MainActivity extends DaggerAppCompatActivity implements MainActivit
 
     @Inject
     MainActivityPresenter mainActivityPresenter;
+
+    @Inject
+    SmartFragmentStatePagerAdapter adapter;
 
     @OnClick(R.id.buttonStartRecording)
     public void onButtonStartClick(View v) {
@@ -81,7 +79,6 @@ public class MainActivity extends DaggerAppCompatActivity implements MainActivit
     }
 
     private void initializeFragmentPager(){
-        adapter = new SmartFragmentStatePagerAdapter(getSupportFragmentManager());
         fragmentPager.setAdapter(adapter);
     }
 
