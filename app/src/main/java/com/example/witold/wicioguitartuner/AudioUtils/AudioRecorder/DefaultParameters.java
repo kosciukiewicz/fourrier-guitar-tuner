@@ -13,4 +13,6 @@ public class DefaultParameters {
     public static final int MAX_FOURIER_CHART_FREQ = 1200;
     public static final int BUFFER_SIZE = 2048;
     public static final int MINIMAL_LOUDNESS = 50;
+    public static final int REQUEST_PERMISSION_CODE = 1;
+    public static final String PERMISSION_DENIED_MESSAGE = "You need to grant recording permission first!";
 }

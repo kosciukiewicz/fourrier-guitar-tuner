@@ -10,11 +10,15 @@ import com.example.witold.wicioguitartuner.BaseInterfaces.BaseView;
 public class MainActivityContract {
     interface MainActivityView extends BaseView {
         void setRecordedFrequencyTextView(float freq);
+        void requestPermission(String permission);
+        void showToastMessage(String message);
+        void setRecordingIcon(boolean recording);
     }
 
     interface Presenter extends BasePresenter<MainActivityView> {
         void subscribeAudioRecorder();
-        void startAudioRecorder();
+        void checkAudioRecordPermissionStartAudioRecorder();
         void finnishAudioRecorder();
+        void processAudioRecordPermissionRequestResult( int[] grantResults);
     }
 }

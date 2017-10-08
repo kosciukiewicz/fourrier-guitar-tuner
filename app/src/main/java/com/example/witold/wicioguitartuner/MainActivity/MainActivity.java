@@ -1,12 +1,18 @@
 package com.example.witold.wicioguitartuner.MainActivity;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.witold.wicioguitartuner.AudioUtils.AudioRecorder.DefaultParameters;
 import com.example.witold.wicioguitartuner.R;
 import com.example.witold.wicioguitartuner.MainActivity.SmartFragmentStatePagerAdapter.SmartFragmentStatePagerAdapter;
 
@@ -44,7 +50,7 @@ public class MainActivity extends DaggerAppCompatActivity implements MainActivit
 
     @OnClick(R.id.buttonStartRecording)
     public void onButtonStartClick(View v) {
-        mainActivityPresenter.startAudioRecorder();
+        mainActivityPresenter.checkAudioRecordPermissionStartAudioRecorder();
     }
 
     @OnClick(R.id.buttonFinishRecording)
@@ -75,10 +81,38 @@ public class MainActivity extends DaggerAppCompatActivity implements MainActivit
 
     @Override
     public void setRecordedFrequencyTextView(float freq) {
-        recordedFrequency.setText(String.format("%1.2f Hz",freq));
+        recordedFrequency.setText(String.format("%1.2f Hz", freq));
     }
 
-    private void initializeFragmentPager(){
+    @Override
+    public void requestPermission(String permission) {
+        ActivityCompat.requestPermissions(this, new String[]{permission}, DefaultParameters.REQUEST_PERMISSION_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case DefaultParameters.REQUEST_PERMISSION_CODE: {
+                mainActivityPresenter.processAudioRecordPermissionRequestResult(grantResults);
+            }
+        }
+    }
+
+    @Override
+    public void showToastMessage(String message) {
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void setRecordingIcon(boolean visibility) {
+        if (visibility) {
+            imageViewStatus.setVisibility(View.VISIBLE);
+        } else {
+            imageViewStatus.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void initializeFragmentPager() {
         fragmentPager.setAdapter(adapter);
     }
 
@@ -108,17 +142,5 @@ public class MainActivity extends DaggerAppCompatActivity implements MainActivit
 
         navigationTabBar.setModels(models);
         navigationTabBar.setViewPager(fragmentPager, 1);
-    }
-
-    public void setRecording(boolean visibility)
-    {
-        if(visibility)
-        {
-            imageViewStatus.setVisibility(View.VISIBLE);
-        }
-        else
-        {
-            imageViewStatus.setVisibility(View.INVISIBLE);
-        }
     }
 }
